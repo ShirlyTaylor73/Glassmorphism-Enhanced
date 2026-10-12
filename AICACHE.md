@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-12 主题展示身份调整（M6）
+
+- 用户要求将主题管理卡片的作者和项目链接改为自己；仅调整 manifest 的 author 为 ShirlyTaylor73、url 为其 Glassmorphism-Enhanced 仓库。
+- 保留版本 1.0.6、内部 short、功能配置及原始 LICENSE/THIRD_PARTY。既有 v1.0.6 Tag/Release 保持发布时的内容，本轮生成新安装包，不静默替换已发布附件。
+- 验证：提交前核对 JSON 差异仅 author/url；提交后运行 lint、生产构建和包内 manifest/结构校验。无运行时代码变更，不重复 93 项浏览器测试。
+
+## 上轮已发布
+
 ### 2026-10-12 v1.0.6 用户 fork 发布
 
 - 用户明确选择 v1.0.6，准备 push/tag/Release；唯一写入目标更新为 `ShirlyTaylor73/Glassmorphism-Enhanced`。此次授权覆盖前轮仅本地 review 的边界，原作者仓库继续只读。
