@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-13 后台入口与重复官方前端清理
+
+- 用户批准实施，分支 fix/admin-entry-cleanup；M4 入口交互/M6 重复资源清理，规格 docs/admin-entry-cleanup_spec.md。
+- 状态 in-progress：先失败测试，再入口与 PWA/官方资源清理，最后验证和本地候选包；不发布，不修改服务端。
+- 以 Emerald 直接 /admin 为参考；此前只读检查线上官方 admin 布局已确认 logged_in=false 时 autoOpen 登录框，不能用主题 mock 代替真实集成。
+
+## 历史任务
+
 ### 2026-10-12 主题展示身份调整（M6）
 
 - 用户要求将主题管理卡片的作者和项目链接改为自己；仅调整 manifest 的 author 为 ShirlyTaylor73、url 为其 Glassmorphism-Enhanced 仓库。

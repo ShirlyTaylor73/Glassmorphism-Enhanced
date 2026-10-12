@@ -16,6 +16,8 @@ const REGION_FIXTURES = [
 ] as const
 
 export interface VisualFixtureOptions {
+  hideAdminEntryWhenLoggedOut?: boolean
+  hidePriceWhenLoggedOut?: boolean
   nodeCount?: number
   renewalDays?: number[]
   transit?: boolean
@@ -469,8 +471,8 @@ export async function installKomariFixture(page: Page, options: VisualFixtureOpt
     stopEarth: true,
     visitorInfoEnabled: true,
     colorVisionMode: options.colorVisionFriendly ? '色觉友好' : '标准',
-    hideAdminEntryWhenLoggedOut: false,
-    hidePriceWhenLoggedOut: false,
+    hideAdminEntryWhenLoggedOut: options.hideAdminEntryWhenLoggedOut,
+    hidePriceWhenLoggedOut: options.hidePriceWhenLoggedOut ?? false,
     disablePageAnimation: true,
     homeQuickControlsEnabled: true,
     homeQuickControlPreset: '完整',
