@@ -19,6 +19,11 @@
 - 状态 in-progress：版本 bump 至 1.0.6，补本轮中文发布说明，更新 README 下载入口；原作者署名保留。发布后必须核对远端 Actions、Tag SHA 和下载附件。
 - 发布准备提交 `8382a42` 已推送修复分支和 main，两者远端 SHA 读回一致；本轮版本修改后 lint/build（含 type-check）通过。
 - 首次 main push 后三个 workflow 已登记 active，但 Actions runs/check-runs 均为 0；此次记录提交产生新的正常 push，以验证自动化真正执行。仓库默认 token 只读，release YAML 已显式声明 contents: write，无需扩大仓库默认权限。
+- 已完成发布：`https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.6`，非 draft/prerelease；main 与 annotated tag 的 peeled SHA 都是 `9ab24bccbd2966e8e3302d2bd2da38f1835f1c50`。
+- 两次 main push 均未产生自动 Actions 运行，原因未确证；手动 Code Quality run `38271532576` 成功（lint、无格式 diff、build）。Release/Visual 没有远端运行，不能声称自动发布或远端视觉通过；本地完整 93/93 保持有效，代码未在版本准备阶段变动。
+- 自动发布未运行，已按用户授权通过正常 Git/gh 手动创建 annotated tag/正式 Release 并上传最终提交生产包。下载后校验通过：772 entries、manifest 1.0.6、CRC、顶层结构、preview、与本地 ZIP 字节完全一致；GitHub digest 同 SHA256 `51f161446772da9563e3b5d7eb9dc084c852a1a263e6b37a92b22520b12a85fa`（8,213,674 bytes）。
+- 自动审批拒绝了读取 Git/gh token 进行对比的可选诊断，未执行读取，不阻塞正常发布。没有更改凭据或降低 Actions 权限。
+- 本段发布后交接只提交/推送修复分支，不再推进 main；现有 release workflow 在同版本 Tag 指向旧 SHA 时会 hard-fail，后续 main 变更前需评估版本/触发策略。生产安装及真实站点瀑布仍待用户验收。
 
 ## 已完成：修复与本地验收
 

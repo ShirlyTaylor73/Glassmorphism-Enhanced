@@ -2,6 +2,8 @@
 
 ## 当前发布：v1.0.6（2026-10-12）
 
+发布已完成：[v1.0.6](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.6)，main/Tag 对应 `9ab24bc`。两次 push 没有创建自动运行，最终使用正常 Git/gh 手动发布；手动 [Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38271532576) 通过，本地 Playwright/visual 93/93 通过，未声称远端视觉运行。附件下载 SHA256 与 GitHub digest、本地包一致。下面保留准备阶段事实。
+
 - 用户已授权向自己的 `ShirlyTaylor73/Glassmorphism-Enhanced` 推送并发布，选择版本 1.0.6。此次授权替代下方历史任务的 review-only 边界；不向原作者仓库写入。
 - origin fetch/push 均为该仓库；GitHub 登录 ShirlyTaylor73，viewerPermission ADMIN；发布前远端 main 为 3bb76d9，尚无 Tag/Release。
 - 工作流文件与远端一致：main push 匹配 Code Quality、Visual Regression、Release On Version Bump；修复分支 push 和 tag push 均不匹配。发布流程计算但未使用 version_changed 作为门槛；已有同名 Tag 若指向其他提交会失败。
