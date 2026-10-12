@@ -9,5 +9,8 @@ export const REQUEST_CONFIG = {
   },
   pool: {
     maxConcurrent: NETWORK_CONFIG.concurrency.maxRequests,
+    groupLimits: {
+      'monthly-traffic': 2,
+    },
   },
 } as const

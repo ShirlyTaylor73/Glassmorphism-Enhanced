@@ -2,16 +2,17 @@ import type { RequestManagerOptions } from '../src/services/request.service'
 import { expect, test } from '@playwright/test'
 import { RequestManager } from '../src/services/request.service'
 
-// Keep the red phase executable before the optional scheduling fields exist.
-const monthly: RequestManagerOptions & { priority: 'low', concurrencyGroup: 'monthly-traffic' } = {
+const monthly: RequestManagerOptions = {
   priority: 'low',
   concurrencyGroup: 'monthly-traffic',
 }
-const high: RequestManagerOptions & { priority: 'high' } = { priority: 'high' }
+const high: RequestManagerOptions = { priority: 'high' }
 
 function deferred() {
   let resolve!: () => void
-  const promise = new Promise<void>((done) => { resolve = done })
+  const promise = new Promise<void>((done) => {
+    resolve = done
+  })
   return { promise, resolve }
 }
 
@@ -27,7 +28,9 @@ test('monthly requests cannot occupy the eight-slot pool or block ping', async (
     active -= 1
   }, monthly))
   let pingStarted = false
-  const ping = manager.run('ping', async () => { pingStarted = true }, high)
+  const ping = manager.run('ping', async () => {
+    pingStarted = true
+  }, high)
   try {
     await expect.poll(() => pingStarted, { timeout: 500 }).toBe(true)
     expect(peak).toBe(2)
@@ -44,11 +47,21 @@ test('priority, FIFO and queued dedupe promotion preserve task identity', async 
   const gate = deferred()
   const blockers = Array.from({ length: 8 }, (_, index) => manager.run(`block:${index}`, () => gate.promise))
   const order: string[] = []
-  const low = manager.run('low', async () => { order.push('low') }, { priority: 'low' } as RequestManagerOptions)
-  const normal = manager.run('normal', async () => { order.push('normal') })
-  const promoted = manager.run('promoted', async () => { order.push('promoted') })
-  const duplicate = manager.run('promoted', async () => { throw new Error('duplicate task executed') }, high)
-  const highSecond = manager.run('high-second', async () => { order.push('high-second') }, high)
+  const low = manager.run('low', async () => {
+    order.push('low')
+  }, { priority: 'low' })
+  const normal = manager.run('normal', async () => {
+    order.push('normal')
+  })
+  const promoted = manager.run('promoted', async () => {
+    order.push('promoted')
+  })
+  const duplicate = manager.run('promoted', async () => {
+    throw new Error('duplicate task executed')
+  }, high)
+  const highSecond = manager.run('high-second', async () => {
+    order.push('high-second')
+  }, high)
   expect(duplicate).toBe(promoted)
   gate.resolve()
   await Promise.all([...blockers, low, normal, promoted, highSecond])
@@ -88,7 +101,9 @@ test('old aborted task cannot remove a replacement with the same key', async () 
   manager.abort('same')
   const replacement = manager.run('same', () => gate.promise)
   await old
-  const duplicate = manager.run('same', async () => { throw new Error('replacement lost') })
+  const duplicate = manager.run('same', async () => {
+    throw new Error('replacement lost')
+  })
   // Observe the promise even on the old implementation's failing path.
   const observed = duplicate.catch(error => error)
   gate.resolve()
@@ -106,10 +121,14 @@ test('timeouts, retries and queued cancellation release group capacity', async (
   const gate = deferred()
   const blocked = manager.run('blocked', () => gate.promise, monthly)
   let cancelledStarted = false
-  const cancelled = manager.run('cancelled', async () => { cancelledStarted = true }, monthly).catch(error => error)
+  const cancelled = manager.run('cancelled', async () => {
+    cancelledStarted = true
+  }, monthly).catch(error => error)
   manager.abort('cancelled')
   let nextStarted = false
-  const next = manager.run('next', async () => { nextStarted = true }, monthly)
+  const next = manager.run('next', async () => {
+    nextStarted = true
+  }, monthly)
   try {
     await timeout
     await next

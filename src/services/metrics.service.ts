@@ -1,3 +1,4 @@
+import type { RequestSchedulingOptions } from '@/services/request.service'
 import type { MetricDefinition, MetricQueryParams, MetricQueryResponse, PingMetricStatsParams, PingMetricStatsResponse, PingTaskInfo } from '@/utils/rpc'
 import { CACHE_CONFIG } from '@/constants/cache'
 import { SharedCache } from '@/services/cache.service'
@@ -120,7 +121,7 @@ export async function loadMetricDefinitions(): Promise<MetricDefinition[]> {
   return metricDefinitionsCache.set(key, definitions)
 }
 
-export async function queryMetrics(params: MetricQueryParams): Promise<MetricQueryResponse> {
+export async function queryMetrics(params: MetricQueryParams, scheduling: RequestSchedulingOptions = {}): Promise<MetricQueryResponse> {
   const normalizedParams: MetricQueryParams = {
     ...params,
     hours: normalizeHours(params.hours),
@@ -130,7 +131,7 @@ export async function queryMetrics(params: MetricQueryParams): Promise<MetricQue
   return requestManager.run(
     getQueryMetricsRequestKey(normalizedParams),
     async signal => getSharedRpc().queryPublicMetrics(normalizedParams, signal),
-    { shouldRetry: shouldRetryMetricRequest },
+    { ...scheduling, shouldRetry: shouldRetryMetricRequest },
   )
 }
 
@@ -144,7 +145,7 @@ export async function loadPingMetricStats(params: PingMetricStatsParams): Promis
   return requestManager.run(
     getPingMetricStatsRequestKey(normalizedParams),
     async signal => getSharedRpc().getPublicPingMetricStats(normalizedParams, signal),
-    { shouldRetry: shouldRetryMetricRequest },
+    { priority: 'high', shouldRetry: shouldRetryMetricRequest },
   )
 }
 
@@ -157,7 +158,7 @@ export async function loadPublicPingTasks(): Promise<PingTaskInfo[]> {
   const tasks = await requestManager.run(
     key,
     async () => getSharedRpc().getPublicPingTasks(),
-    { shouldRetry: shouldRetryMetricRequest },
+    { priority: 'high', shouldRetry: shouldRetryMetricRequest },
   )
   return publicPingTasksCache.set(key, tasks)
 }

@@ -89,12 +89,12 @@ function buildClients(options: VisualFixtureOptions = {}) {
       expired_at: options.renewalDays?.[index]
         ? `2027-07-${String(options.renewalDays[index]).padStart(2, '0')}T00:00:00.000Z`
         : options.trafficGrandfatherNode === index
-        ? '2027-07-31T00:00:00.000Z'
-        : options.expiryThresholds && index === 0
-          ? '2026-07-30T12:00:00.000Z'
-          : options.expiryThresholds && index === 1
-            ? '2026-08-04T12:00:00.000Z'
-            : index === 6 ? '2026-08-02T00:00:00.000Z' : '2027-07-25T00:00:00.000Z',
+          ? '2027-07-31T00:00:00.000Z'
+          : options.expiryThresholds && index === 0
+            ? '2026-07-30T12:00:00.000Z'
+            : options.expiryThresholds && index === 1
+              ? '2026-08-04T12:00:00.000Z'
+              : index === 6 ? '2026-08-02T00:00:00.000Z' : '2027-07-25T00:00:00.000Z',
       group: index < 6 ? '生产' : '测试,边缘',
       tags: options.upstreamTags && index >= 1 && index <= 3
         ? `upstream:${REGION_FIXTURES[index - 1]!.name}`

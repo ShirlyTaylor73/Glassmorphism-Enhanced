@@ -1,3 +1,4 @@
+import type { RequestSchedulingOptions } from '@/services/request.service'
 import type { PingRecord, PingTaskInfo, StatusRecord } from '@/utils/rpc'
 import { requestManager } from '@/services/request.service'
 import { ApiError, getSharedApi } from '@/utils/api'
@@ -77,7 +78,9 @@ export function abortNodeLoadRecords(uuid: string, hours: number, maxCount?: num
 }
 
 export function abortPingRecords(hours: number, maxCount?: number, uuid?: string): void {
-  requestManager.abort(getPingRecordsRequestKey(hours, maxCount, uuid))
+  const key = getPingRecordsRequestKey(hours, maxCount, uuid)
+  requestManager.abort(key)
+  requestManager.abort(`${key}:tasks`)
 }
 
 export function normalizeStatusRecord(record: Partial<StatusRecord>): StatusRecord | null {
@@ -141,21 +144,26 @@ export async function loadLoadRecords(uuid: string | undefined, hours: number, m
   )
 }
 
+/** Transport-only fallback: callers already hold the request-pool slot. */
+async function fetchNodeLoadRecords(uuid: string, hours: number, maxCount: number | undefined, signal: AbortSignal): Promise<StatusRecord[]> {
+  signal.throwIfAborted()
+  try {
+    const result = await getSharedRpc().getLoadRecords(uuid, hours, undefined, maxCount, signal)
+    return normalizeStatusRecordsPayload(result.records)
+  }
+  catch {
+    signal.throwIfAborted()
+    const result = await getSharedApi().getLoadRecords(uuid, hours, maxCount, signal)
+    return normalizeStatusRecords(result.records)
+  }
+}
+
 export async function loadNodeLoadRecords(uuid: string, hours: number, maxCount?: number): Promise<StatusRecord[]> {
   const safeHours = normalizeHours(hours)
   const safeMaxCount = normalizeMaxCount(maxCount)
   return requestManager.run(
     getNodeLoadRecordsRequestKey(uuid, safeHours, safeMaxCount),
-    async (signal) => {
-      try {
-        const result = await getSharedRpc().getLoadRecords(uuid, safeHours, undefined, safeMaxCount, signal)
-        return normalizeStatusRecordsPayload(result.records)
-      }
-      catch {
-        const result = await getSharedApi().getLoadRecords(uuid, safeHours, safeMaxCount, signal)
-        return normalizeStatusRecords(result.records)
-      }
-    },
+    signal => fetchNodeLoadRecords(uuid, safeHours, safeMaxCount, signal),
     { shouldRetry: shouldRetryHistoryRequest },
   )
 }
@@ -171,6 +179,7 @@ export async function loadNodeLoadRecordsByRange(
   start: Date,
   end: Date,
   maxCount = -1,
+  scheduling: RequestSchedulingOptions = {},
 ): Promise<StatusRecord[]> {
   const startTime = start.getTime()
   const endTime = end.getTime()
@@ -199,16 +208,18 @@ export async function loadNodeLoadRecordsByRange(
         return normalizeStatusRecordsPayload(records)
       }
       catch {
+        signal.throwIfAborted()
         try {
           const result = await getSharedRpc().getLoadRecords(uuid, safeHours, 'network', maxCount > 0 ? maxCount : undefined, signal)
           return normalizeStatusRecordsPayload(result.records)
         }
         catch {
-          return loadNodeLoadRecords(uuid, safeHours, maxCount > 0 ? maxCount : undefined)
+          signal.throwIfAborted()
+          return fetchNodeLoadRecords(uuid, safeHours, maxCount > 0 ? maxCount : undefined, signal)
         }
       }
     },
-    { shouldRetry: shouldRetryHistoryRequest },
+    { ...scheduling, shouldRetry: shouldRetryHistoryRequest },
   )
 }
 
@@ -221,7 +232,7 @@ export async function loadPingRecords(hours: number, maxCount?: number, uuid?: s
       const result = await getSharedRpc().getPingRecords(undefined, safeHours, safeMaxCount, signal, uuid)
       return result.records ?? []
     },
-    { shouldRetry: shouldRetryHistoryRequest },
+    { priority: 'high', shouldRetry: shouldRetryHistoryRequest },
   )
 }
 
@@ -237,6 +248,6 @@ export async function loadPingRecordsWithTasks(hours: number, maxCount?: number,
         tasks: result.tasks ?? [],
       }
     },
-    { shouldRetry: shouldRetryHistoryRequest },
+    { priority: 'high', shouldRetry: shouldRetryHistoryRequest },
   )
 }

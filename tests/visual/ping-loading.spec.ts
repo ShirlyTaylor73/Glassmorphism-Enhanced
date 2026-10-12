@@ -16,7 +16,9 @@ for (const sharedCycle of [false, true]) {
     })
 
     let release!: () => void
-    const gate = new Promise<void>((resolve) => { release = resolve })
+    const gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
     const traffic: Array<{ start: string, end: string, entity_ids: string[] }> = []
     let active = 0
     let peak = 0

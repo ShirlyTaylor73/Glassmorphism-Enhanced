@@ -291,7 +291,7 @@ async function loadPingMetricRecords(nodeUuid: string, hours: number, maxCount?:
       fill_empty: true,
       max_points: maxCount,
       aggregation: 'avg',
-    }),
+    }, { priority: 'high' }),
     loadPublicPingTasks(),
   ])
 

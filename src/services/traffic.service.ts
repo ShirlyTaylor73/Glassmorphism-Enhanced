@@ -1,10 +1,10 @@
+import type { RequestSchedulingOptions } from '@/services/request.service'
 import type { NodeData, TrafficLimitType } from '@/stores/nodes'
 import type { MetricQueryResponse, StatusRecord } from '@/utils/rpc'
 import type { MonthlyTrafficCycle } from '@/utils/trafficCycle'
 import { SharedCache } from '@/services/cache.service'
 import { loadNodeLoadRecordsByRange } from '@/services/history.service'
 import { queryMetrics } from '@/services/metrics.service'
-import { requestManager } from '@/services/request.service'
 import { RpcError } from '@/utils/rpc'
 import { getMonthlyTrafficCycle } from '@/utils/trafficCycle'
 import { isMonthlyTrafficCycleActive } from '@/utils/trafficMigration'
@@ -30,6 +30,10 @@ export interface MonthlyTrafficUsage {
 
 const TRAFFIC_METRIC_KEYS = ['traffic.up', 'traffic.down'] as const
 const TRAFFIC_HISTORY_MAX_COUNT = -1
+const TRAFFIC_SCHEDULING: RequestSchedulingOptions = {
+  priority: 'low',
+  concurrencyGroup: 'monthly-traffic',
+}
 export const MONTHLY_TRAFFIC_CACHE_TTL_MS = 10 * 60_000
 const TRAFFIC_CACHE_CLEANUP_MS = 5 * 60_000
 
@@ -96,14 +100,6 @@ function usageCacheKey(node: NodeData, cycleKey: string, mode: MonthlyTrafficCac
   return `traffic:monthly:${mode}:${node.uuid}:${cycleKey}:${node.traffic_limit}:${node.traffic_limit_type}`
 }
 
-function metricBatchRequestKey(cycle: MonthlyTrafficCycle, now: Date, uuids: string[]): string {
-  return `traffic:metric:${cycle.key}:${now.toISOString()}:${[...uuids].sort().join(',')}`
-}
-
-function historyRequestKey(cycle: MonthlyTrafficCycle, now: Date, uuid: string): string {
-  return `traffic:history:${cycle.key}:${now.toISOString()}:${uuid}`
-}
-
 /** Sum every returned bucket for one metric/entity pair; never use only the latest point. */
 export function sumTrafficMetricSeries(response: MetricQueryResponse, metricKey: string, entityId: string): number {
   let total = 0
@@ -154,17 +150,14 @@ async function loadMetricUsageForGroup(
   if (now.getTime() <= cycle.start.getTime())
     return new Map(nodes.map(node => [node.uuid, createUsage(node, cycle, 0, 0, 'metric')]))
 
-  const response = await requestManager.run(
-    metricBatchRequestKey(cycle, now, uuids),
-    async () => queryMetrics({
-      metric_keys: [...TRAFFIC_METRIC_KEYS],
-      entity_ids: uuids,
-      start: cycle.start.toISOString(),
-      end: now.toISOString(),
-      aggregation: 'sum',
-      max_points: 2_000,
-    }),
-  )
+  const response = await queryMetrics({
+    metric_keys: [...TRAFFIC_METRIC_KEYS],
+    entity_ids: uuids,
+    start: cycle.start.toISOString(),
+    end: now.toISOString(),
+    aggregation: 'sum',
+    max_points: 2_000,
+  }, TRAFFIC_SCHEDULING)
 
   const metricUsages = new Map<string, MonthlyTrafficUsage>()
   const nodesMissingMetricData: NodeData[] = []
@@ -244,13 +237,8 @@ async function loadHistoryUsageForNode(
   cycle: MonthlyTrafficCycle,
   now: Date,
 ): Promise<MonthlyTrafficUsage> {
-  return requestManager.run(
-    historyRequestKey(cycle, now, node.uuid),
-    async () => {
-      const records = await loadNodeLoadRecordsByRange(node.uuid, cycle.start, now, TRAFFIC_HISTORY_MAX_COUNT)
-      return sumHistoryTraffic(records, node, cycle, now)
-    },
-  )
+  const records = await loadNodeLoadRecordsByRange(node.uuid, cycle.start, now, TRAFFIC_HISTORY_MAX_COUNT, TRAFFIC_SCHEDULING)
+  return sumHistoryTraffic(records, node, cycle, now)
 }
 
 /**

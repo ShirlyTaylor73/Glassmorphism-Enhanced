@@ -1,11 +1,18 @@
 import { REQUEST_CONFIG } from '@/constants/request'
 
+export interface RequestSchedulingOptions {
+  priority?: 'high' | 'normal' | 'low'
+  concurrencyGroup?: keyof typeof REQUEST_CONFIG.pool.groupLimits
+}
+
+const PRIORITY_RANK = { high: 2, normal: 1, low: 0 } as const
+
 interface PendingRequest<T> {
   promise: Promise<T>
   controller: AbortController
 }
 
-interface QueuedRequest<T> {
+interface QueuedRequest<T> extends RequestSchedulingOptions {
   key: string
   controller: AbortController
   task: (signal: AbortSignal) => Promise<T>
@@ -16,7 +23,7 @@ interface QueuedRequest<T> {
   shouldRetry: (error: unknown) => boolean
 }
 
-export interface RequestManagerOptions {
+export interface RequestManagerOptions extends RequestSchedulingOptions {
   timeout?: number
   retryAttempts?: number
   shouldRetry?: (error: unknown) => boolean
@@ -42,11 +49,20 @@ export class RequestManager {
   private readonly pending = new Map<string, PendingRequest<unknown>>()
   private readonly queue: Array<QueuedRequest<unknown>> = []
   private activeCount = 0
+  private readonly activeGroups = new Map<NonNullable<RequestSchedulingOptions['concurrencyGroup']>, number>()
 
   run<T>(key: string, task: (signal: AbortSignal) => Promise<T>, options: RequestManagerOptions = {}): Promise<T> {
     const existing = this.pending.get(key) as PendingRequest<T> | undefined
-    if (existing)
+    if (existing) {
+      const queued = this.queue.find(request => request.controller === existing.controller)
+      if (queued) {
+        if (PRIORITY_RANK[options.priority ?? 'normal'] > PRIORITY_RANK[queued.priority ?? 'normal'])
+          queued.priority = options.priority
+        queued.concurrencyGroup ??= options.concurrencyGroup
+        this.drainQueue()
+      }
       return existing.promise
+    }
 
     const controller = new AbortController()
     const timeout = options.timeout ?? REQUEST_CONFIG.timeout.default
@@ -63,13 +79,16 @@ export class RequestManager {
         timeout,
         retryAttempts,
         shouldRetry,
+        priority: options.priority ?? 'normal',
+        concurrencyGroup: options.concurrencyGroup,
       } as QueuedRequest<unknown>)
-      this.drainQueue()
     }).finally(() => {
-      this.pending.delete(key)
+      if (this.pending.get(key)?.controller === controller)
+        this.pending.delete(key)
     })
 
     this.pending.set(key, { promise, controller })
+    this.drainQueue()
     return promise
   }
 
@@ -87,6 +106,7 @@ export class RequestManager {
 
     const [request] = this.queue.splice(index, 1)
     request?.reject(createAbortError())
+    this.drainQueue()
   }
 
   abortAll(): void {
@@ -102,7 +122,21 @@ export class RequestManager {
 
   private drainQueue(): void {
     while (this.activeCount < REQUEST_CONFIG.pool.maxConcurrent && this.queue.length > 0) {
-      const request = this.queue.shift()
+      let nextIndex = -1
+      let highestPriority = -1
+      for (const [index, candidate] of this.queue.entries()) {
+        const group = candidate.concurrencyGroup
+        if (group && (this.activeGroups.get(group) ?? 0) >= REQUEST_CONFIG.pool.groupLimits[group])
+          continue
+        const priority = PRIORITY_RANK[candidate.priority ?? 'normal']
+        if (priority > highestPriority) {
+          nextIndex = index
+          highestPriority = priority
+        }
+      }
+      if (nextIndex < 0)
+        return
+      const [request] = this.queue.splice(nextIndex, 1)
       if (!request)
         return
 
@@ -117,12 +151,17 @@ export class RequestManager {
 
   private startActiveRequest<T>(request: QueuedRequest<T>): void {
     this.activeCount += 1
+    const group = request.concurrencyGroup
+    if (group)
+      this.activeGroups.set(group, (this.activeGroups.get(group) ?? 0) + 1)
     void (async () => {
       try {
         await this.execute(request)
       }
       finally {
         this.activeCount = Math.max(0, this.activeCount - 1)
+        if (group)
+          this.activeGroups.set(group, Math.max(0, (this.activeGroups.get(group) ?? 0) - 1))
         this.drainQueue()
       }
     })()
