@@ -1,5 +1,16 @@
 # Releasing Glassmorphism Enhanced
 
+## 当前发布：v1.0.6（2026-10-12）
+
+- 用户已授权向自己的 `ShirlyTaylor73/Glassmorphism-Enhanced` 推送并发布，选择版本 1.0.6。此次授权替代下方历史任务的 review-only 边界；不向原作者仓库写入。
+- origin fetch/push 均为该仓库；GitHub 登录 ShirlyTaylor73，viewerPermission ADMIN；发布前远端 main 为 3bb76d9，尚无 Tag/Release。
+- 工作流文件与远端一致：main push 匹配 Code Quality、Visual Regression、Release On Version Bump；修复分支 push 和 tag push 均不匹配。发布流程计算但未使用 version_changed 作为门槛；已有同名 Tag 若指向其他提交会失败。
+- Actions 仓库权限已开启，但检查时 workflow API 列表为空；必须在推送后检查实际注册、运行与发布，不能只依据 YAML 宣称成功。
+- 首选 main 快进触发自动发布 v1.0.6；若 fork 工作流尚未激活，先完成已存在工作流的激活并验证运行。Tag 与附件必须对应最终 main SHA，不覆盖历史 Tag。
+- 发布说明见 [v1.0.6](release-notes-v1.0.6.md)。原作者署名和许可证不变；下方内容属于此前原作者 fork 的历史交接。
+
+## 历史：v1.0.5 发布交接
+
 Repository: https://github.com/casiuna/Glassmorphism-Enhanced
 
 Current delivery branch: **`release/v1.0.5`** in this fork. The temporary safety branch was retired only after the standard branch was read back at the verified v1.0.5 candidate SHA. Keep manifest **`1.0.5`** and the future Git tag / Release **`v1.0.5`**; temporary names are not release identifiers.

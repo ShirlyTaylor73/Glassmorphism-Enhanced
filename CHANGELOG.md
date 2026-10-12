@@ -2,6 +2,15 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.0.6 — 2026-10-12
+
+- 修复月流量在共享请求池中嵌套占位导致三网延迟长期加载的问题。
+- 三网请求优先调度；全局并发上限保持 8，首页与详情月流量共同最多占用 2 个名额。
+- 修复详情历史兼容回退、Ping 历史取消和同键任务重建的生命周期问题。
+- 保留每台机器的流量周期、同周期合并、缓存、迁移日期及三网算法，无需新增配置。
+- 新增 12 项回归测试；完整 Playwright/visual 93/93 通过，未更新截图基线。
+- 本版本发布至 `ShirlyTaylor73/Glassmorphism-Enhanced`，保留原作者及许可证署名。升级注意事项见 `docs/release-notes-v1.0.6.md`。
+
 ## 1.0.5 — Unreleased
 
 ### Transit rule format change — manual migration required

@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-12 v1.0.6 用户 fork 发布
+
+- 用户明确选择 v1.0.6，准备 push/tag/Release；唯一写入目标更新为 `ShirlyTaylor73/Glassmorphism-Enhanced`。此次授权覆盖前轮仅本地 review 的边界，原作者仓库继续只读。
+- origin fetch/push 已核对；gh 登录 ShirlyTaylor73、ADMIN 权限。远端 main=3bb76d9，无 Tag/Release；工作流文件与本地相同，Actions enabled=true，但 workflow 列表为空、无运行记录。
+- 状态 in-progress：版本 bump 至 1.0.6，补本轮中文发布说明，更新 README 下载入口；原作者署名保留。发布后必须核对远端 Actions、Tag SHA 和下载附件。
+
+## 已完成：修复与本地验收
+
 ### 2026-10-12 三网加载阻塞修复（M2）
 
 - 用户已批准实施；分支 `fix/ping-loading-scheduling`，规格见 `docs/ping-loading-fix_spec.md`。
