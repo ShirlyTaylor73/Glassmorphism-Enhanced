@@ -17,6 +17,8 @@
 - 用户明确选择 v1.0.6，准备 push/tag/Release；唯一写入目标更新为 `ShirlyTaylor73/Glassmorphism-Enhanced`。此次授权覆盖前轮仅本地 review 的边界，原作者仓库继续只读。
 - origin fetch/push 已核对；gh 登录 ShirlyTaylor73、ADMIN 权限。远端 main=3bb76d9，无 Tag/Release；工作流文件与本地相同，Actions enabled=true，但 workflow 列表为空、无运行记录。
 - 状态 in-progress：版本 bump 至 1.0.6，补本轮中文发布说明，更新 README 下载入口；原作者署名保留。发布后必须核对远端 Actions、Tag SHA 和下载附件。
+- 发布准备提交 `8382a42` 已推送修复分支和 main，两者远端 SHA 读回一致；本轮版本修改后 lint/build（含 type-check）通过。
+- 首次 main push 后三个 workflow 已登记 active，但 Actions runs/check-runs 均为 0；此次记录提交产生新的正常 push，以验证自动化真正执行。仓库默认 token 只读，release YAML 已显式声明 contents: write，无需扩大仓库默认权限。
 
 ## 已完成：修复与本地验收
 

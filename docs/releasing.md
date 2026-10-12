@@ -6,6 +6,7 @@
 - origin fetch/push 均为该仓库；GitHub 登录 ShirlyTaylor73，viewerPermission ADMIN；发布前远端 main 为 3bb76d9，尚无 Tag/Release。
 - 工作流文件与远端一致：main push 匹配 Code Quality、Visual Regression、Release On Version Bump；修复分支 push 和 tag push 均不匹配。发布流程计算但未使用 version_changed 作为门槛；已有同名 Tag 若指向其他提交会失败。
 - Actions 仓库权限已开启，但检查时 workflow API 列表为空；必须在推送后检查实际注册、运行与发布，不能只依据 YAML 宣称成功。
+- 首次 main push（8382a42）之后三个 workflow 已登记 active，但 runs/check-runs 都为空；通过本次发布交接记录的后续正常 push 再次触发，发布结果以远端实际运行和资产为准。
 - 首选 main 快进触发自动发布 v1.0.6；若 fork 工作流尚未激活，先完成已存在工作流的激活并验证运行。Tag 与附件必须对应最终 main SHA，不覆盖历史 Tag。
 - 发布说明见 [v1.0.6](release-notes-v1.0.6.md)。原作者署名和许可证不变；下方内容属于此前原作者 fork 的历史交接。
 
