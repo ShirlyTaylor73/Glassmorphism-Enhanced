@@ -16,6 +16,8 @@ const REGION_FIXTURES = [
 ] as const
 
 export interface VisualFixtureOptions {
+  nodeCount?: number
+  renewalDays?: number[]
   transit?: boolean
   transitEnabled?: boolean
   transitRules?: string
@@ -57,7 +59,7 @@ function uuidFor(index: number): string {
 }
 
 function buildClients(options: VisualFixtureOptions = {}) {
-  return Object.fromEntries(Array.from({ length: 12 }, (_, index) => {
+  return Object.fromEntries(Array.from({ length: options.nodeCount ?? 12 }, (_, index) => {
     const fixture = REGION_FIXTURES[index % REGION_FIXTURES.length]
     const uuid = uuidFor(index)
     return [uuid, {
@@ -84,7 +86,9 @@ function buildClients(options: VisualFixtureOptions = {}) {
       billing_cycle: 365,
       auto_renewal: index % 2 === 0,
       currency: 'USD',
-      expired_at: options.trafficGrandfatherNode === index
+      expired_at: options.renewalDays?.[index]
+        ? `2027-07-${String(options.renewalDays[index]).padStart(2, '0')}T00:00:00.000Z`
+        : options.trafficGrandfatherNode === index
         ? '2027-07-31T00:00:00.000Z'
         : options.expiryThresholds && index === 0
           ? '2026-07-30T12:00:00.000Z'
@@ -104,8 +108,8 @@ function buildClients(options: VisualFixtureOptions = {}) {
   }))
 }
 
-function buildStatuses() {
-  return Object.fromEntries(Array.from({ length: 12 }, (_, index) => {
+function buildStatuses(nodeCount = 12) {
+  return Object.fromEntries(Array.from({ length: nodeCount }, (_, index) => {
     const uuid = uuidFor(index)
     const offline = index === 5
     const highLoad = index === 2
@@ -258,7 +262,7 @@ function buildMetricResponse(
     const start = typeof payload.start === 'string' ? payload.start : FIXED_NOW
     const end = typeof payload.end === 'string' ? payload.end : FIXED_NOW
     const series = entityIds.flatMap((entityId) => {
-      const nodeIndex = Math.max(0, Object.keys(clients).indexOf(entityId))
+      const nodeIndex = Math.max(0, Number(entityId.slice(-12)) - 1)
       if (options.trafficMetricEmptyNode === nodeIndex)
         return []
       const up = (nodeIndex + 1) * 45 * GIB
@@ -307,8 +311,8 @@ function jsonRpcResult(id: unknown, result: unknown) {
   return { jsonrpc: '2.0', id, result }
 }
 
-function withoutLatestTrafficFields(): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(statuses).map(([uuid, status]) => {
+function withoutLatestTrafficFields(source = statuses): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(source).map(([uuid, status]) => {
     const sanitized = { ...status } as Record<string, unknown>
     delete sanitized.traffic_up
     delete sanitized.traffic_down
@@ -373,7 +377,7 @@ async function handleRpc(route: Route, clientFixtures = clients, options: Visual
       result = clientFixtures
       break
     case 'common:getNodesLatestStatus':
-      result = options.latestStatusWithoutTraffic ? withoutLatestTrafficFields() : statuses
+      result = options.latestStatusWithoutTraffic ? withoutLatestTrafficFields(buildStatuses(options.nodeCount)) : buildStatuses(options.nodeCount)
       if (options.relayOffline)
         result = { ...(result as Record<string, unknown>), [uuidFor(1)]: { ...(result as Record<string, Record<string, unknown>>)[uuidFor(1)], online: false } }
       break

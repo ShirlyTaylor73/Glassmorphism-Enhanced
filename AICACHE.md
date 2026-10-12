@@ -12,6 +12,17 @@
 
 ## 当前任务
 
+### 2026-10-12 三网加载阻塞修复（M2）
+
+- 用户已批准实施；分支 `fix/ping-loading-scheduling`，规格见 `docs/ping-loading-fix_spec.md`。
+- 状态：in-progress。先补失败用例，再删除月流量嵌套占位、增加三网高优先级和月流量全局并发 2 的限制，清理详情兼容链及取消生命周期。
+- 保留周期/算法/迁移日期/版本号；只本地分阶段提交，不部署、不 push main、不 merge、不 tag/Release。
+- 验证计划：旧实现红灯、聚焦调度/兼容测试、30 节点页面回归、type-check/lint/test:visual/build/diff-check 与 ZIP 校验。
+- 环境：初始工作树干净；Git 分支写入和依赖安装需沙箱提升，依赖按 lockfile 安装。此前线上只读和内存实验不等于修复后的生产验收。
+- 红灯：新增 5 个调度用例均在旧实现失败；历史用例改用 Vite SSR 加载以提供 import.meta.env 后，3 个用例分别复现回退嵌套、取消后继续回退、`:tasks` 未取消。30 节点页面用例已编写，等待浏览器验证。
+
+## 上轮任务（历史）
+
 ### v1.0.5 — fork-only release branch normalization
 
 - 唯一写入仓库：`casiuna/Glassmorphism-Enhanced`；upstream 仅可只读参考，禁止向 upstream 创建 PR/issue/comment/review 或 push。本轮不访问或改动 upstream PR #57，也不创建任何 PR（包括 fork 内 PR）。
