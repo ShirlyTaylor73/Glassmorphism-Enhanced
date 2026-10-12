@@ -15,11 +15,14 @@
 ### 2026-10-13 后台入口与重复官方前端清理
 
 - 用户批准实施，分支 fix/admin-entry-cleanup；M4 入口交互/M6 重复资源清理，规格 docs/admin-entry-cleanup_spec.md。
-- 状态 in-progress：入口/PWA/资源清理完成，聚焦 16/16 通过；旧构建 5 项聚焦中 4 项失败（隐藏入口、两种旧链接、PWA），1 项已登录入口正常。不发布、不修改服务端。
+- 状态 Ready for review：入口/PWA/资源清理完成，聚焦 16/16、完整 104/104 通过；旧构建 5 项聚焦中 4 项失败（隐藏入口、两种旧链接、PWA），1 项已登录入口正常。不发布、不修改服务端。
 - 删除 414 个内嵌官方文件，仅保留固定跳转页；复制保留来源的 PWA 图标并生成真实 192/512 尺寸，删除同步脚本和后台 CSS。lint/type-check 通过。历史模板代码块从 markdown 改为 text，解除格式规则循环。
 - 独立官方前端检查：站点服务端 1.5.1 实际官方 JS，在隔离浏览器中拦截所有 API/POST，4 组通过（密码错误→要求 2FA→错误 2FA→成功，OAuth-only，已登录刷新→会话失效，匿名弹框）。不向生产提交凭据；真实授权/终端会话和生产安装未验收。
 - 本地 Komari theme.go 上传安装流程先 RemoveAll 旧主题目录再解包，正常上传应清除旧资源；不代表已对生产执行更新或检查磁盘。
 - simplify 复核：仅保留直接导航、重复点击保护及 pageshow/组件恢复重置，不自建登录和第二套页面。
+- 最终检查：lint/type-check/production build/diff-check PASS，完整 Playwright/visual 104/104（系统 Chrome），未更新 snapshots；独立官方 UI 4 组通过但 API 均 mock，真实 OAuth/生产安装/终端会话仍未验收。
+- ZIP 从 772 entries/8,213,701 bytes 降为 359 entries/约 5,923,932 bytes，减少 27.9%；顶层/CRC/manifest 1.0.6/作者/preview/dist/PWA 尺寸/无内嵌官方 JS 均通过。
+- 阶段提交：7dbae05 规格与红灯，81ae731 实现与清理；本交接提交后重建 final-HEAD 包，最终包名与哈希在交付中提供。不 push、不发布、不覆盖 v1.0.6 附件。
 - 以 Emerald 直接 /admin 为参考；此前只读检查线上官方 admin 布局已确认 logged_in=false 时 autoOpen 登录框，不能用主题 mock 代替真实集成。
 
 ## 历史任务
