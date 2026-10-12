@@ -1182,8 +1182,6 @@ const useAppStore = defineStore('app', () => {
     return { cards: [...CHART_DASHBOARD_PRESETS[preset]] }
   })
 
-  const hideAdminEntryWhenLoggedOut = computed<boolean>(() => readBooleanSetting(themeSettings.value, 'hideAdminEntryWhenLoggedOut', false))
-
   const hidePriceWhenLoggedOut = computed<boolean>(() => readBooleanSetting(themeSettings.value, 'hidePriceWhenLoggedOut', false))
 
   const providerAliases = computed<string>(() => readStringSetting(themeSettings.value, 'providerAliases'))
@@ -1360,7 +1358,6 @@ const useAppStore = defineStore('app', () => {
     diskPredictionEnabled,
     diskPredictionThresholdDays,
     chartDashboardTemplate,
-    hideAdminEntryWhenLoggedOut,
     hidePriceWhenLoggedOut,
     providerAliases,
     exportSecondaryPassword,

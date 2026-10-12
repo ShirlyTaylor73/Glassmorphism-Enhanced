@@ -1,17 +1,24 @@
-import { ref } from 'vue'
-import { getAdminEntryUrl } from '@/services/auth.service'
+import { onActivated, onScopeDispose, ref } from 'vue'
 
 export function useAdminNavigation() {
   const navigating = ref(false)
-  async function openAdmin() {
+  function resetNavigation() {
+    navigating.value = false
+  }
+  onActivated(resetNavigation)
+  window.addEventListener('pageshow', resetNavigation)
+  onScopeDispose(() => window.removeEventListener('pageshow', resetNavigation))
+
+  function openAdmin() {
     if (navigating.value)
       return
     navigating.value = true
     try {
-      window.location.assign(await getAdminEntryUrl())
+      window.location.assign('/admin')
     }
-    finally {
-      navigating.value = false
+    catch (error) {
+      resetNavigation()
+      throw error
     }
   }
   return { openAdmin, navigating }

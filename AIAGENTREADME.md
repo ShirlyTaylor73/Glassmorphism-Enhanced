@@ -164,6 +164,12 @@ Vue Component
 - `RouterView` 的路由组件被 `Transition` 和 `KeepAlive` 包裹，因此 `HomeView`、`InstanceDetail` 必须保持单一 HTML 元素根节点。全局弹窗、抽屉和 Teleport 入口也要放在该根容器内部；Fragment 根会让 Vue 无法执行离场动画，`out-in` 模式可能只剩背景且必须刷新才能恢复。
 - 改路由视图根结构后，必须在浏览器验证首页 -> 详情 -> 返回首页，确认无需刷新、控制台没有 `Component inside <Transition> renders non-element root node` 警告；同时覆盖开启和关闭“减弱过渡动画”的模式。
 
+### 后台归属（2026-10-13）
+
+主题仅提供公开首页和节点详情。后台按钮始终显示并完整导航 `/admin`，登录、2FA、OAuth、后台和终端由 Komari 服务端默认前端提供。不要重新内嵌官方公开首页或引入后台路由桥接。旧 `hideAdminEntryWhenLoggedOut` 设置已忽略；其他权限与价格遮罩保持原样。
+
+`public/admin-app/index.html` 仅为旧 URL 的固定 `/admin` 跳转兼容页，不包含官方 JS/CSS。主题 PWA 使用 `public/manifest.webmanifest` 和 `public/images/pwa/`；不添加 Service Worker、不注销官方 Service Worker。开发预览无 Komari 服务端时，`/admin` 不构成真实登录环境。
+
 ## 8. 状态管理
 
 ### 8.1 app store

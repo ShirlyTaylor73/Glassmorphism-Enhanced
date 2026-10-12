@@ -178,3 +178,9 @@ Glassmorphism Enhanced 源自 [Komari Glassmorphism](https://github.com/sanrokam
 ## License
 
 本项目使用 [MIT License](LICENSE)。上游与第三方版权和许可声明继续保留。
+
+## 后台登录
+
+顶部“后台管理”始终显示，点击进入 Komari 自带的 `/admin`。未登录时由官方后台显示登录流程；本主题不再包含另一套官方公开首页或后台皮肤。旧“隐藏后台入口”配置会被忽略，旧内嵌入口链接仅跳转后台。
+
+主题 PWA 图标与 manifest 已独立，升级后原始许可证与第三方署名保留。“未登录隐藏价格”仅控制本主题展示，不是匿名 API 的数据访问限制。

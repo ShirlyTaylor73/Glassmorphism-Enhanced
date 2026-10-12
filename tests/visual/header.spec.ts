@@ -35,7 +35,7 @@ for (const loggedIn of [true, false]) {
     test(`admin entry is always visible: login=${loggedIn}, legacyHide=${hidden}`, async ({ page }) => {
       await installKomariFixture(page, { loggedIn, hideEarth: true, hideAdminEntryWhenLoggedOut: hidden })
       const destinations: string[] = []
-      page.on('request', request => {
+      page.on('request', (request) => {
         if (request.isNavigationRequest())
           destinations.push(new URL(request.url()).pathname)
       })
@@ -69,6 +69,8 @@ test('guest price masking survives admin navigation and return', async ({ page }
   await page.goBack()
   await expect(page).toHaveURL(/instance/)
   await expect(page.getByText('***', { exact: false }).first()).toBeVisible()
+  await page.getByRole('button', { name: '后台管理', exact: true }).click()
+  await expect(page).toHaveURL(/\/admin$/)
 })
 
 for (const blockedStorage of [false, true]) {
@@ -77,7 +79,9 @@ for (const blockedStorage of [false, true]) {
     page.on('request', request => requests.push(request.url()))
     await page.addInitScript(({ blockedStorage }) => {
       if (blockedStorage) {
-        Object.defineProperty(window, 'sessionStorage', { get() { throw new Error('storage disabled') } })
+        Object.defineProperty(window, 'sessionStorage', { get() {
+          throw new Error('storage disabled')
+        } })
       }
       else {
         sessionStorage.setItem('komariOfficialAppRoute', '/')
@@ -108,5 +112,34 @@ test('PWA metadata is independent of the removed official app', async ({ page })
       return [image.naturalWidth, image.naturalHeight]
     }, icon)
     expect(actual).toEqual([size, size])
+  }
+})
+
+test('legacy compatibility page removes only its own storage key', async ({ page }) => {
+  await page.route('**/admin-app/index.html*', async (route) => {
+    const response = await route.fetch()
+    const html = (await response.text()).replace('location.replace(\'/admin\')', '/* redirect disabled only for storage assertion */')
+    await route.fulfill({ response, body: html })
+  })
+  await page.addInitScript(() => {
+    sessionStorage.setItem('komariOfficialAppRoute', '/')
+    sessionStorage.setItem('preserve-me', 'yes')
+  })
+  await page.goto('/admin-app/index.html?__komari_route=%2F')
+  expect(await page.evaluate(() => sessionStorage.getItem('komariOfficialAppRoute'))).toBeNull()
+  expect(await page.evaluate(() => sessionStorage.getItem('preserve-me'))).toBe('yes')
+  await expect(page.getByRole('link', { name: '进入后台管理' })).toHaveAttribute('href', '/admin')
+})
+
+test('legacy compatibility page works without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    await page.goto('http://127.0.0.1:4173/admin-app/index.html')
+    await expect(page.getByRole('link', { name: '进入后台管理' })).toHaveAttribute('href', '/admin')
+    await expect(page.locator('script[src]')).toHaveCount(0)
+  }
+  finally {
+    await context.close()
   }
 })

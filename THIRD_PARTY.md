@@ -35,3 +35,8 @@ Emerald's current region-to-visitor hub-and-spoke behavior was studied as a visu
 ## License compatibility
 
 All three reviewed projects use the MIT License. The licenses permit use, modification, distribution, and sublicensing provided their copyright and permission notices are retained. The upstream root `LICENSE` is unchanged; this file records the additional provenance and attribution relevant to the enhanced patches.
+
+## 保留的 Komari Web PWA 图标
+
+- 来源：<https://github.com/komari-monitor/komari-web>，原内嵌快照 `ebfbd3e079f8777a746276fe67429b519024f7c7`。
+- 当前用途：`public/images/pwa/icon-512.png` 及由它缩小的 192px 图标。完整内嵌前端已移除，保留此来源说明；原项目署名不因后台清理而改写。

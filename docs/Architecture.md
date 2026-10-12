@@ -49,3 +49,11 @@ M2-M6 build on the v3 foundation without changing the public route contract:
 - M6 documents the architecture, auth, cache, data flow, migration behavior, and milestone acceptance points.
 
 New work should continue to use the same layered chain rather than reintroducing component-local request, cache, or permission logic.
+
+## 后台与公开主题的边界（2026-10-13）
+
+后台管理入口始终显示，统一完整导航 `/admin`；服务端默认前端负责登录、后台和终端。主题不再附带 komari-web、不接管后台路由、不提供第二套公开首页。旧隐藏后台入口配置不再消费。
+
+保留 `/admin-app/index.html` 静态固定跳转兼容页，其他内嵌官方资源及同步脚本均移除。主题的 PWA manifest 和 192/512 图标独立放置，原版权/资源来源继续保留。
+
+价格隐藏仍为主题展示策略，不代表匿名 API 已过滤价格。此前内嵌后台/公开首页登录中转的历史说明已被本节取代。

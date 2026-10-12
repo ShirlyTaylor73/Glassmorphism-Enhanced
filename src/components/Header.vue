@@ -51,13 +51,11 @@ const actionButtons = computed(() => {
     action: 'toggleTheme',
   })
 
-  if (!appStore.loading && (appStore.privateFeaturesAllowed || !appStore.hideAdminEntryWhenLoggedOut)) {
-    buttons.push({
-      title: '后台管理',
-      icon: 'icon-park-outline:setting',
-      action: 'jumpToSetting',
-    })
-  }
+  buttons.push({
+    title: '后台管理',
+    icon: 'icon-park-outline:setting',
+    action: 'jumpToSetting',
+  })
   return buttons
 })
 
