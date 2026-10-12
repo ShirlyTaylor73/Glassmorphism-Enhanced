@@ -16,7 +16,10 @@
 
 - 用户已授权 push 并 release；本次将作者信息与后台清理一起作为 1.0.7 发布，保留既有 v1.0.6。
 - 目标仅 ShirlyTaylor73/Glassmorphism-Enhanced，已核对 ADMIN 权限；远端 main=9ab24bc，v1.0.7 尚不存在，三个 workflow active。
-- 状态 in-progress：更新 manifest/README/CHANGELOG/发布说明，验证后正常推送分支和 main。若 push 仍不触发 Actions，手动触发 Code Quality 并使用正常 Git/gh 发布，记录真实状态。
+- 状态 done：v1.0.7 已发布至 https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.7 ，main 与 annotated tag peeled SHA 均为 3616cc6be35e51d1fedb0832470973a91c2a5e57。
+- push 仍未触发自动 workflow；手动 Code Quality run 38278633399 成功（lint/clean diff/build），无远端 Visual/Release 运行。本地完整 104/104 保持有效，版本准备只改 metadata/docs。
+- 已正常手动创建 Tag/Release，附件 komari-theme-Glassmorphism-build-3616cc6.zip，5,923,917 bytes、359 entries。下载文件与本地及 GitHub digest 一致：SHA256 9c361ace6e618632c8c897fb644eb95f840fde17d5931cf5efbefc64d9ce72a3；manifest 1.0.7/作者/CRC/顶层/PWA 尺寸/内嵌资源移除均通过。
+- 本发布后交接仅推送修复分支，main 固定在发布提交；生产安装/真实 Cookie/OAuth/终端会话仍待用户验收。
 
 ## 已完成：清理候选包
 
