@@ -2,6 +2,14 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.0.7 — 2026-10-13
+
+- 后台入口始终显示，忽略旧隐藏入口开关，点击直接进入 Komari 官方 `/admin` 登录流程。
+- 移除完整内嵌官方前端、重复公开首页、后台皮肤及同步脚本；旧入口只保留固定跳转兼容页。
+- PWA manifest 与 192/512 图标独立迁移，保留 standalone 和 iOS safe-area；安装包减少约 27.9%。
+- 主题作者与仓库链接更新为 ShirlyTaylor73，保留原始版权及第三方署名。
+- 完整 Playwright/visual 104/104 通过，截图基线未改。价格隐藏仍是主题展示策略，不改变匿名 API 权限。
+
 ## 1.0.6 — 2026-10-12
 
 - 修复月流量在共享请求池中嵌套占位导致三网延迟长期加载的问题。

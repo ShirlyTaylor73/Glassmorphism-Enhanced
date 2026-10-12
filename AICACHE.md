@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-13 v1.0.7 发布
+
+- 用户已授权 push 并 release；本次将作者信息与后台清理一起作为 1.0.7 发布，保留既有 v1.0.6。
+- 目标仅 ShirlyTaylor73/Glassmorphism-Enhanced，已核对 ADMIN 权限；远端 main=9ab24bc，v1.0.7 尚不存在，三个 workflow active。
+- 状态 in-progress：更新 manifest/README/CHANGELOG/发布说明，验证后正常推送分支和 main。若 push 仍不触发 Actions，手动触发 Code Quality 并使用正常 Git/gh 发布，记录真实状态。
+
+## 已完成：清理候选包
+
 ### 2026-10-13 后台入口与重复官方前端清理
 
 - 用户批准实施，分支 fix/admin-entry-cleanup；M4 入口交互/M6 重复资源清理，规格 docs/admin-entry-cleanup_spec.md。
