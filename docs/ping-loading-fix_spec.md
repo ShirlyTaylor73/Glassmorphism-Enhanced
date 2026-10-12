@@ -32,3 +32,11 @@
 
 - 分支 fix/ping-loading-scheduling；分阶段本地 commit，停在 Ready for review。
 - 不 push main、不 merge、不创建 tag/Release、不部署线上。安装候选包后的真实浏览器验收另行记录。
+
+## 2026-10-12 实施复核
+
+- 契约已实现；调度选项仅在服务层传递，未修改后端参数、业务周期、迁移日期和版本。
+- 旧代码：5 个调度测试、3 个兼容/取消测试失败；旧构建的两项 30 节点页面测试均复现三网停在加载中。
+- 修复后：新增 12 项测试（10 项核心/兼容 + 2 项 30 节点页面）通过；完整 Playwright/visual 93/93 通过。系统 Chrome，未更新既有截图基线。
+- type-check、lint、production build、diff-check 全部通过。ZIP 顶层、772 entries、CRC、manifest 1.0.5、preview/dist 一致性和 production rollout anchor 均通过。
+- 已复核本规格；状态 Ready for review。生产浏览器瀑布及实际用户站点性能仍待安装候选包后验收。

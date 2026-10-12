@@ -15,7 +15,7 @@
 ### 2026-10-12 三网加载阻塞修复（M2）
 
 - 用户已批准实施；分支 `fix/ping-loading-scheduling`，规格见 `docs/ping-loading-fix_spec.md`。
-- 状态：in-progress。先补失败用例，再删除月流量嵌套占位、增加三网高优先级和月流量全局并发 2 的限制，清理详情兼容链及取消生命周期。
+- 状态：Ready for review。月流量嵌套占位、三网高优先级、月流量全局并发 2、详情兼容链及取消生命周期均已实现验证。
 - 保留周期/算法/迁移日期/版本号；只本地分阶段提交，不部署、不 push main、不 merge、不 tag/Release。
 - 验证计划：旧实现红灯、聚焦调度/兼容测试、30 节点页面回归、type-check/lint/test:visual/build/diff-check 与 ZIP 校验。
 - 环境：初始工作树干净；Git 分支写入和依赖安装需沙箱提升，依赖按 lockfile 安装。此前线上只读和内存实验不等于修复后的生产验收。
@@ -23,6 +23,11 @@
 - 实现完成：删除月流量外围调度，添加 high/normal/low 与 monthly-traffic 分组（全局 8、月流量 2），历史回退改传输内复用并检查 signal；Ping 历史取消包含 `:tasks`。同键重建采用 controller 身份清理。
 - 聚焦验证：旧构建的两种 30 节点页面均停留“加载中”；修复构建两项通过，月流量释放前显示中转三网、释放后 30 节点周期与数值正确。核心/历史测试扩展至 10/10 通过，覆盖首页/详情共用 2 个名额和超时不回退。lint/type-check 已通过；未改截图。
 - 代码已按 simplify 原则复核：复用一个请求池、传输 helper 和既有去重键，不创建第二套业务队列或配置 UI。待完整回归与生产 ZIP。
+- 最终验证：`bun run lint`、`bun run type-check`、`bun run build`、`git diff --check` PASS；`PLAYWRIGHT_CHANNEL=chrome bun run test:visual` 93/93 PASS（原 81 + 新增 12），未改 snapshots。既有 globe chunk >600 kB 警告保留。
+- 阶段提交：规格/红灯 `e07127b`，实现/绿灯 `5a2c7d6`。规格已在实现结束后逐项复核，本次交接提交只补文档；之后重建 final-HEAD 生产包，具体 SHA256 随交付结果给出，避免自引用提交。
+- `5a2c7d6` 生产包已校验：772 entries、CRC、顶层仅 manifest/preview/dist、manifest 1.0.5、preview/dist 字节一致、production anchor 为 2026-09-16，未混入 visual-test anchor。
+- 环境记录：安装依赖及 Git 写操作需要沙箱提升；首次测试清理子进程受限，提升后正常退出。官方 Chromium 下载较慢，改用已有系统 Chrome 完成所有测试，随后停止额外下载；没有改浏览器基线。
+- 下一步：用户审核并安装候选包，再做真实站点请求瀑布验收。未推送、合并、创建 tag/Release 或部署；没有修改主 Komari 仓库。
 
 ## 上轮任务（历史）
 
