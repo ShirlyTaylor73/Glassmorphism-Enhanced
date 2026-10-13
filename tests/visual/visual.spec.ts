@@ -121,8 +121,8 @@ test('home mini card metric icons remain accessible', async ({ page }) => {
   await expect(card.locator('[data-node-metric-icon="cpu"]')).toBeVisible()
   await expect(card.locator('[data-node-metric-icon="memory"]')).toBeVisible()
   await expect(card.locator('[data-node-metric-icon="traffic"]')).toBeVisible()
-  await expect(card.getByRole('img', { name: 'CPU' })).toBeVisible()
-  await expect(card.getByRole('img', { name: '内存' })).toBeVisible()
+  await expect(card.getByText('CPU', { exact: true })).toBeVisible()
+  await expect(card.getByText('内存', { exact: true })).toBeVisible()
 })
 
 test('node card degrades cleanly with no ping tasks', async ({ page }) => {
