@@ -96,6 +96,20 @@ test('malformed storage falls back and outside drop does not save', async ({ pag
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
 
+test('dropping outside a panel onto its node card does not navigate', async ({ page }) => {
+  await open(page)
+  const row = page.locator('[data-carrier-ping="mobile-latency"]').first()
+  await row.scrollIntoViewIfNeeded()
+  const box = (await row.boundingBox())!
+  await page.mouse.move(box.x + 10, box.y + 5)
+  await page.mouse.down()
+  await page.mouse.move(box.x + 10, box.y - 130, { steps: 6 })
+  await page.mouse.up()
+  await expect(page).toHaveURL(HOME)
+  await allOrders(page, DEFAULT)
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
 test.describe('touch carrier sorting', () => {
   test.use({ hasTouch: true, viewport: { width: 390, height: 844 } })
 

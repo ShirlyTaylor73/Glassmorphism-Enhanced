@@ -13,7 +13,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ open: [] }>()
 const app = useAppStore()
-const { dragging, target, start, click, keyboard } = useCarrierDrag()
+const { dragging, target, start, keyboard } = useCarrierDrag()
 const label = computed(() => props.metric === 'latency' ? '延迟' : '丢包')
 const instruction = computed(() => app.lang === 'zh-CN'
   ? '拖动排序；手机长按拖动；Alt+上下键调整顺序，回车查看详情'
@@ -21,8 +21,7 @@ const instruction = computed(() => app.lang === 'zh-CN'
 
 function onClick(event: MouseEvent): void {
   event.stopPropagation()
-  if (!click(event))
-    emit('open')
+  emit('open')
 }
 
 function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {

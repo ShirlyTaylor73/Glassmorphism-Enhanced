@@ -8,7 +8,19 @@ export function useCarrierDrag() {
   const dragging = ref<ChinaCarrierKey | null>(null)
   const target = ref<ChinaCarrierKey | null>(null)
   let cleanup: (() => void) | undefined
-  let suppressClick = false
+
+  function clearClickGuard(): void {
+    window.removeEventListener('click', blockDragClick, true)
+    window.removeEventListener('pointerdown', clearClickGuard, true)
+  }
+
+  function blockDragClick(event: MouseEvent): void {
+    if (event.detail === 0)
+      return
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    clearClickGuard()
+  }
 
   function cancel(): void {
     cleanup?.()
@@ -20,7 +32,7 @@ export function useCarrierDrag() {
   function start(event: PointerEvent, key: ChinaCarrierKey): void {
     if (!event.isPrimary || event.button !== 0 || cleanup)
       return
-    suppressClick = false
+    clearClickGuard()
     const row = event.currentTarget as HTMLElement
     const panel = row.closest('[data-node-ping-bars]') as HTMLElement
     const x = event.clientX
@@ -30,7 +42,9 @@ export function useCarrierDrag() {
     const activate = () => {
       dragging.value = key
       target.value = key
-      suppressClick = true
+      // The release can land outside this panel, including on the enclosing node card.
+      window.addEventListener('click', blockDragClick, true)
+      window.addEventListener('pointerdown', clearClickGuard, true)
     }
     const update = (next: PointerEvent) => {
       if (next.pointerId !== event.pointerId)
@@ -94,16 +108,6 @@ export function useCarrierDrag() {
       timer = setTimeout(activate, 350)
   }
 
-  function click(event: MouseEvent): boolean {
-    if (suppressClick && event.detail !== 0) {
-      event.preventDefault()
-      event.stopImmediatePropagation()
-      suppressClick = false
-      return true
-    }
-    return false
-  }
-
   function keyboard(event: KeyboardEvent, key: ChinaCarrierKey): void {
     if (!event.altKey || !['ArrowUp', 'ArrowDown'].includes(event.key))
       return
@@ -117,6 +121,9 @@ export function useCarrierDrag() {
     }
   }
 
-  onScopeDispose(cancel)
-  return { dragging, target, start, click, keyboard }
+  onScopeDispose(() => {
+    cancel()
+    clearClickGuard()
+  })
+  return { dragging, target, start, keyboard }
 }
