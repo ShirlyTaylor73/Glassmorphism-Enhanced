@@ -12,6 +12,18 @@
 
 ## 当前任务
 
+### 2026-10-14 三网拖动排序（已完成，Ready for review）
+
+- 用户确认整行拖动、当前浏览器保存。规格 docs/carrier-order_spec.md，分支 feat/carrier-order；不升版本、不 push/release。
+- 共享 carrierOrder 同步所有节点延迟/丢包面板，普通与中转一致；默认联通/电信/移动，存储键 theme:carrier-order:v1，非法项去重补齐。
+- 桌面 6px 阈值，手机长按 350ms，滚动优先；Alt+上下键排序及焦点恢复，Enter/Space 详情，拖出/Escape/pointercancel 取消。拖动结束点击在窗口捕获，防止拖出面板误跳节点详情。
+- 规格/失败测试 8058067；实现 1a0f0cb；补充边界失败测试后修复 659ffa0。原实现拖动同步用例失败；补充拖出面板用例复现误跳后修复。
+- 验证：lint/type-check/diff-check 通过；完整 Playwright 141/141（误跳边界修复前）；最终改动重新构建并跑全部排序专项 8/8。无截图基线/阈值修改；移动 mini 排序截图人工查看通过。Chrome 模拟触摸通过，不冒称真机 Safari/生产验收。
+- simplify 已复核，抽取共用面板与手势 composable，无新增依赖/API/后台配置/统计逻辑改动。
+- production build 通过，保留已知 globe 大包警告。候选包 komari-theme-Glassmorphism-build-659ffa0.zip，版本 1.0.11，5,926,094 bytes，359 entries，SHA256 958977211edb836de5e128de2bba61736bc71a6da568309c49097408500cfee6。CRC/三项顶层/manifest/preview/无测试文件检查通过。
+- 候选包来自最终代码提交 659ffa0，之后仅文档交接提交；未安装生产站点。正式发布需用户另行授权并按兼容功能 SemVer 规则选择版本。
+
+
 ### 2026-10-14 v1.0.11 发布
 
 - 用户授权发布，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced；版本 1.0.11，保留历史版本。
@@ -888,8 +900,3 @@
 - 普通阈值下 7 张截图中仅两张深色背景超限；为审核浅色也使用临时严格阈值生成全部实际图，未修改正式阈值。
 - 旧 snapshots 有更早版本的卡片/图标/金额漂移。用只读 Vite loader 加载 1cfbbad 的 Header/Background/store 创建参考构建，与本轮源码逐张对比 7 张图，确认卡片、三网和数据一致，本轮差异限背景/目标按钮。
 - 审核图位于本地 test-results/background-review/source-review-0..6.jpg；移动手动状态截图确认“恢复自动”可见且标题截断不溢出。将已审核的七张实际截图写入基线，不放宽阈值。
-
-## 2026-10-14 三网拖动排序（进行中）
-- 用户确认整行拖动、当前浏览器保存；规格 docs/carrier-order_spec.md，分支 feat/carrier-order。
-- 已添加根目录 test 聚焦用例；旧实现拖动同步用例失败，排序仍为联通/电信/移动。
-- 本轮不升版本、不推送发布。
