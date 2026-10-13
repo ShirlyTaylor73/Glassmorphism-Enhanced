@@ -35,7 +35,7 @@ interface NodePingTaskStatsSource {
 const EMPTY_PING_BAR_COUNT = 20
 
 const CARRIER_DOT_CLASSES: Record<ChinaCarrierKey, string> = {
-  unicom: 'bg-rose-500',
+  unicom: 'bg-violet-500',
   telecom: 'bg-blue-500',
   mobile: 'bg-emerald-500',
 }

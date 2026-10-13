@@ -272,8 +272,6 @@ function hasRegion(region: string | null | undefined): boolean {
           >
             {{ osDisplayName }}
           </span>
-          <span class="shrink-0 text-[10px]" aria-hidden="true">·</span>
-          <span class="shrink-0 text-[10px]">{{ props.node.arch || '-' }}</span>
           <div class="ml-auto flex shrink-0 items-center justify-end gap-1">
             <span
               v-if="supportsIPv4"
@@ -314,14 +312,15 @@ function hasRegion(region: string | null | undefined): boolean {
         </div>
 
         <!-- 四项进度条 -->
-        <div v-if="isMiniNodeCard" class="grid grid-cols-[3fr_2fr] gap-x-4 gap-y-2">
-          <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+        <div v-if="isMiniNodeCard" class="grid grid-cols-[3fr_2fr] gap-x-2 gap-y-2">
+          <div class="grid grid-cols-2 gap-x-2 gap-y-1">
             <div class="flex flex-col gap-1">
-              <div class="flex justify-between text-xs">
-                <span class="inline-flex items-center text-sky-500" role="img" title="CPU" aria-label="CPU">
-                  <Icon :icon="NODE_METRIC_ICONS.cpu" data-node-metric-icon="cpu" width="12" height="12" aria-hidden="true" />
+              <div class="grid grid-cols-1 gap-y-0.5 text-[10px]">
+                <span class="inline-flex items-center gap-1 whitespace-nowrap text-muted-foreground">
+                  <Icon :icon="NODE_METRIC_ICONS.cpu" data-node-metric-icon="cpu" width="12" height="12" class="shrink-0 text-sky-500" aria-hidden="true" />
+                  <span>CPU</span>
                 </span>
-                <span class="tabular-nums font-medium" :class="cpuStatus === 'error' ? 'text-destructive' : 'text-violet-700 dark:text-violet-300/90'" data-node-percentage="cpu">{{ (props.node.cpu ?? 0).toFixed(1) }}%</span>
+                <span class="justify-self-end tabular-nums font-medium" :class="cpuStatus === 'error' ? 'text-destructive' : 'text-violet-700 dark:text-violet-300/90'" data-node-percentage="cpu">{{ (props.node.cpu ?? 0).toFixed(1) }}%</span>
               </div>
               <ProgressThin :percentage="props.node.cpu ?? 0" :status="cpuStatus" :height="4" />
               <div class="text-[10px] text-muted-foreground truncate" data-node-cores title="CPU 逻辑核心数">
@@ -330,11 +329,12 @@ function hasRegion(region: string | null | undefined): boolean {
             </div>
 
             <div class="flex flex-col gap-1" :title="swapTooltip">
-              <div class="flex justify-between text-xs">
-                <span class="inline-flex items-center text-emerald-500" role="img" title="内存" aria-label="内存">
-                  <Icon :icon="NODE_METRIC_ICONS.memory" data-node-metric-icon="memory" width="12" height="12" aria-hidden="true" />
+              <div class="grid grid-cols-1 gap-y-0.5 text-[10px]">
+                <span class="inline-flex items-center gap-1 whitespace-nowrap text-muted-foreground">
+                  <Icon :icon="NODE_METRIC_ICONS.memory" data-node-metric-icon="memory" width="12" height="12" class="shrink-0 text-emerald-500" aria-hidden="true" />
+                  <span>内存</span>
                 </span>
-                <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'node-metric-pink'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
+                <span class="justify-self-end tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'node-metric-pink'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
               </div>
               <ProgressThin :percentage="memPercentage" :status="memStatus" :height="4" />
             </div>
@@ -345,12 +345,12 @@ function hasRegion(region: string | null | undefined): boolean {
           </div>
 
           <div class="flex flex-col gap-1">
-            <div class="flex justify-between text-xs">
+            <div class="grid grid-cols-1 gap-y-0.5 text-[10px]">
               <span class="inline-flex min-w-0 items-center gap-1 text-muted-foreground">
                 <Icon :icon="NODE_METRIC_ICONS.traffic" data-node-metric-icon="traffic" width="12" height="12" class="shrink-0 text-violet-500" aria-hidden="true" />
-                <span class="truncate">流量</span>
+                <span class="whitespace-nowrap">流量</span>
               </span>
-              <span class="tabular-nums font-medium" :class="trafficPercentageClass" data-node-percentage="traffic">
+              <span class="justify-self-end tabular-nums font-medium" :class="trafficPercentageClass" data-node-percentage="traffic">
                 {{ hasTrafficLimit(props.node) ? `${trafficUsedPercentage.toFixed(1)}%` : '∞' }}
               </span>
             </div>

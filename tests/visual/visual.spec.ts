@@ -270,7 +270,7 @@ test('advanced ASN and shared upstream topology remain available', async ({ page
   await expect(page.getByText('还没有解析到 upstream 标签')).toHaveCount(0)
 })
 
-test('node card expiry uses red through 5 days and yellow through 10 days', async ({ page }) => {
+test('node card expiry uses red through 5 days and yellow through 15 days', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 })
   await installKomariFixture(page, { expiryThresholds: true, hideEarth: true })
   await openStablePage(page)

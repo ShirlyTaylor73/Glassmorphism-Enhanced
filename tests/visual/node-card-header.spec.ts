@@ -72,7 +72,6 @@ for (const dark of [false, true]) {
   })
 }
 
-
 test('expiry warning includes day fifteen but not day sixteen', async ({ page }) => {
   await installKomariFixture(page, { hideEarth: true, expiryThresholds: true })
   await page.goto('/')
