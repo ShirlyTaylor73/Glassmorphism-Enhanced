@@ -1,6 +1,10 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.0.10（2026-10-14）
+## 当前发布：v1.0.11（2026-10-14）
+
+用户授权发布到 ShirlyTaylor73/Glassmorphism-Enhanced，内容为 15 天黄色提醒、标题架构移除、联通紫点和 mini 标签完整显示。说明见 [v1.0.11](release-notes-v1.0.11.md)。保留旧 Tag，检查实际 Actions；无自动运行时手动质量检查通过后发布。
+
+## 历史发布：v1.0.10（2026-10-14）
 
 已发布且为 Latest：[v1.0.10](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.10)，main/Tag 为 `2d73cab`。[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38434957144) 成功。push 未自动触发，本次手动发布；下载附件与本地/GitHub digest 一致，5,924,440 bytes。
 

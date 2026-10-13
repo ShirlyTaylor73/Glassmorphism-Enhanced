@@ -2,6 +2,14 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.0.11 — 2026-10-14
+
+- 到期黄色提醒扩大至剩余 6–15 天，5 天内及已过期仍为红色；共享阈值同步卡片、列表和详情。
+- 首页卡片标题移除架构及前置分隔点，系统与协议徽标保留。
+- 联通延迟/丢包标识点改为紫色，不改变历史色条或告警阈值。
+- mini 完整显示 CPU、内存、流量标签，标签与百分比各一行，窄屏进度条对齐。
+- 新增期限边界和 mini 标签回归；完整测试 133 项通过，1 项旧图标语义断言更新后重跑通过。未改视觉基线或阈值。
+
 ## 1.0.10 — 2026-10-14
 
 - 顶部统计卡片复用节点卡片玻璃底色和边框，浅色增加细渐变、内高光和柔和阴影，明暗边界更清晰。

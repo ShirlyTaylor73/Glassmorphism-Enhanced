@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-14 v1.0.11 发布
+
+- 用户授权发布，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced；版本 1.0.11，保留历史版本。
+- 状态 in-progress：已核对 ADMIN、main=2d73cab 和无 v1.0.11 Tag。发布阶段仅版本与文档，重跑 lint/build 后正常 push，核对 Actions、Tag 和下载资产。
+- 验证沿用本轮卡片专项 9/9、完整 133 项通过及更新旧可访问性断言后重跑 1/1；不冒称最终全量重跑。
+
+## 已完成：卡片微调
+
 ### 2026-10-14 四项卡片细节微调
 
 - 用户批准实施，分支 fix/card-detail-polish，规格 docs/card-detail-polish_spec.md。
