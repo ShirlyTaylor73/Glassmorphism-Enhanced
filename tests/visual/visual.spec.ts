@@ -181,18 +181,14 @@ test('automatic earth arcs render without upstream tags', async ({ page }) => {
   await expect(page.locator('[data-earth-arc]')).toHaveCount(Number(await earth.getAttribute('data-earth-arc-count')))
 })
 
-for (const background of [
-  { dark: false, color: 'rgb(248, 250, 252)', opacity: '0.4' },
-  { dark: true, color: 'rgba(15, 23, 42, 0.5)', opacity: '1' },
-] as const) {
-  test(`three-network default background applies the ${background.dark ? 'dark' : 'light'} palette`, async ({ page }) => {
+for (const dark of [false, true]) {
+  test(`GlassOps default background applies the ${dark ? 'dark' : 'light'} palette`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
-    await installKomariFixture(page, { dark: background.dark, hideEarth: true })
+    await installKomariFixture(page, { dark, hideEarth: true })
     await openStablePage(page)
-
-    await expect(page.locator('[data-default-background]')).toHaveCSS('background-color', background.color)
-    await expect(page.locator('.default-background__emerald-surface')).toHaveCSS('opacity', background.opacity)
-    await expect(page.locator('.default-background__pattern')).toBeVisible()
+    await expect(page.locator('[data-default-background]')).toHaveCSS('background-image', /default-background-v2\.webp/)
+    await expect(page.locator('[data-default-background]')).toHaveCSS('filter', dark ? 'brightness(0.38) saturate(0.82) contrast(1.08)' : 'saturate(1.12) contrast(1.02)')
+    await expect(page.locator('.default-background__pattern')).toHaveCount(0)
   })
 }
 

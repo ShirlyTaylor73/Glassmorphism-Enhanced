@@ -40,3 +40,10 @@ All three reviewed projects use the MIT License. The licenses permit use, modifi
 
 - 来源：<https://github.com/komari-monitor/komari-web>，原内嵌快照 `ebfbd3e079f8777a746276fe67429b519024f7c7`。
 - 当前用途：`public/images/pwa/icon-512.png` 及由它缩小的 192px 图标。完整内嵌前端已移除，保留此来源说明；原项目署名不因后台清理而改写。
+
+## GlassOps 默认背景
+
+- 来源：本地 `komari-glassops`，提交 `c5ba36a`（v1.0.10）。
+- 复用：`default-background-v2.webp`、浅深色滤镜与移动端定位；不复制卡片、地球或后台实现。
+- 许可证：MIT。Copyright (c) 2025 Tony Liu (tonyliuzj, tony-liu.com)，保留根 LICENSE。
+- 背景图 SHA256：42377961822666817def3d3b51b2c236a0f5f631dd1475535d9438a6b7ac551b

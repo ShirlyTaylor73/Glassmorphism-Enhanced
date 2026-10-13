@@ -20,20 +20,6 @@ const isScrolled = inject<ReturnType<typeof ref<boolean>>>('isScrolled', ref(fal
 const siteFavicon = ref('/favicon.ico')
 
 const actionButtons = computed(() => {
-  const themeTitleMap = {
-    auto: appStore.managedThemeMode === 'beijing'
-      ? appStore.isBeijingDaytime ? '自动主题：北京时间日间' : '自动主题：北京时间夜间'
-      : appStore.managedThemeMode === 'light' ? '自动主题：后台浅色' : '自动主题：后台深色',
-    light: '浅色主题',
-    dark: '深色主题',
-  } as const
-
-  const themeIconMap = {
-    auto: appStore.isDark ? 'icon-park-outline:moon' : 'icon-park-outline:sun-one',
-    light: 'icon-park-outline:sun-one',
-    dark: 'icon-park-outline:moon',
-  } as const
-
   const buttons: Array<{ title: string, icon: string, action: string, pressed?: boolean }> = []
 
   if (router.currentRoute.value.name === 'home' && appStore.homeToolsEnabled) {
@@ -46,10 +32,14 @@ const actionButtons = computed(() => {
   }
 
   buttons.push({
-    title: `${themeTitleMap[appStore.themeMode]}（点击切换）`,
-    icon: themeIconMap[appStore.themeMode],
+    title: `切换为${appStore.isDark ? '浅' : '深'}色主题${appStore.themeMode === 'auto' ? '（当前自动）' : ''}`,
+    icon: appStore.isDark ? 'icon-park-outline:sun-one' : 'icon-park-outline:moon',
     action: 'toggleTheme',
   })
+
+  if (appStore.themeMode !== 'auto') {
+    buttons.push({ title: '恢复自动', icon: 'tabler:brightness-auto', action: 'restoreAuto' })
+  }
 
   buttons.push({
     title: '后台管理',
@@ -62,7 +52,8 @@ const actionButtons = computed(() => {
 function handleButtonClick(action: string) {
   switch (action) {
     case 'toggleTheme':
-      appStore.updateThemeMode()
+    case 'restoreAuto':
+      appStore.updateThemeMode(action === 'restoreAuto' ? 'auto' : undefined)
       void recordVisitorEvent({
         event: 'theme_mode_change',
         path: router.currentRoute.value.path,
@@ -96,29 +87,30 @@ const sitename = computed(() => appStore.publicSettings?.sitename || 'Komari Mon
     :class="isScrolled ? '!border-slate-500/10 backdrop-blur-lg' : 'bg-transparent'"
   >
     <div class="px-4 flex-between h-14 max-w-[1280px] mx-auto">
-      <div class="flex items-center gap-3 cursor-pointer" @click="router.push('/')">
+      <div class="flex min-w-0 items-center gap-3 cursor-pointer" @click="router.push('/')">
         <Avatar class="size-8">
           <AvatarImage :src="siteFavicon" :alt="sitename" />
           <AvatarFallback>{{ sitename.slice(0, 1) }}</AvatarFallback>
         </Avatar>
-        <h3 class="m-0 text-lg font-semibold">
+        <h3 class="m-0 truncate text-lg font-semibold">
           {{ sitename }}
         </h3>
       </div>
       <TooltipProvider :delay-duration="200">
-        <div class="flex items-center gap-2">
+        <div class="flex shrink-0 items-center gap-1 sm:gap-2">
           <Tooltip v-for="button in actionButtons" :key="button.action">
             <TooltipTrigger as-child>
               <Button
                 variant="ghost"
-                size="icon-sm"
+                :size="button.action === 'restoreAuto' ? 'sm' : 'icon-sm'"
                 :aria-label="button.title"
                 :disabled="button.action === 'jumpToSetting' && navigating"
                 :aria-pressed="button.pressed"
                 :class="button.pressed && 'bg-background/70 text-selection'"
                 @click="handleButtonClick(button.action)"
               >
-                <Icon :icon="button.icon" :width="18" :height="18" />
+                <span v-if="button.action === 'restoreAuto'" class="whitespace-nowrap text-xs">恢复自动</span>
+                <Icon v-else :icon="button.icon" :data-icon="button.icon" :width="18" :height="18" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{{ button.title }}</TooltipContent>

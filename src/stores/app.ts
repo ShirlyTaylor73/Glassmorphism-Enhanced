@@ -1270,14 +1270,7 @@ const useAppStore = defineStore('app', () => {
       return
     }
 
-    const nextMode: Record<ThemeMode, ThemeMode> = {
-      auto: 'light',
-      light: 'dark',
-      dark: 'auto',
-    }
-
-    const currentMode = isValidThemeMode(themeMode.value) ? themeMode.value : 'auto'
-    themeMode.value = nextMode[currentMode]
+    themeMode.value = isDark.value ? 'light' : 'dark'
   }
 
   function syncAuthState() {
