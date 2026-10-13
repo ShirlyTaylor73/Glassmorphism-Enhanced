@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-13 首页卡片标题与配色
+
+- 用户批准执行；分支 feat/node-card-header，规格 docs/node-card-header_spec.md，M4 展示调整。
+- 参考 GlassOps 标题、地址非空徽标和固定色阶；保留紧凑主体与三网，CPU 负载替换 Xcore。本轮不发布。
+- 状态 in-progress：先回归用例，再移植和验证；保留前轮已提交未发布的恢复自动图标。
+
+## 上轮任务
+
 ### 2026-10-13 恢复自动改为图标按钮
 
 - 用户要求将“恢复自动”的可见文字改为图标；Header 统一使用 icon-sm 和现有 tabler:brightness-auto，保留 Tooltip/aria-label 和点击行为。
