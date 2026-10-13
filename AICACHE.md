@@ -16,6 +16,7 @@
 
 - 用户要求将“恢复自动”的可见文字改为图标；Header 统一使用 icon-sm 和现有 tabler:brightness-auto，保留 Tooltip/aria-label 和点击行为。
 - 仅展示调整，版本保持 1.0.8，不替换已发布附件。验证 lint/type-check，并构建与运行既有自动恢复聚焦用例；不新增重复测试。
+- 完成：实现提交 bae3994，lint/type-check/production build/diff-check 通过，既有聚焦测试 4/4；移动截图已查看，恢复自动为图标且标题空间正常。生产 ZIP komari-theme-Glassmorphism-build-bae3994.zip 的 CRC/顶层/版本校验通过；未发布。
 
 ## 上轮发布
 
