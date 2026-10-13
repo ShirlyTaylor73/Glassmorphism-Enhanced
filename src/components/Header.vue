@@ -102,15 +102,14 @@ const sitename = computed(() => appStore.publicSettings?.sitename || 'Komari Mon
             <TooltipTrigger as-child>
               <Button
                 variant="ghost"
-                :size="button.action === 'restoreAuto' ? 'sm' : 'icon-sm'"
+                size="icon-sm"
                 :aria-label="button.title"
                 :disabled="button.action === 'jumpToSetting' && navigating"
                 :aria-pressed="button.pressed"
                 :class="button.pressed && 'bg-background/70 text-selection'"
                 @click="handleButtonClick(button.action)"
               >
-                <span v-if="button.action === 'restoreAuto'" class="whitespace-nowrap text-xs">恢复自动</span>
-                <Icon v-else :icon="button.icon" :data-icon="button.icon" :width="18" :height="18" />
+                <Icon :icon="button.icon" :data-icon="button.icon" :width="18" :height="18" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{{ button.title }}</TooltipContent>

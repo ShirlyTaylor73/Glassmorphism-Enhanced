@@ -12,6 +12,13 @@
 
 ## 当前任务
 
+### 2026-10-13 恢复自动改为图标按钮
+
+- 用户要求将“恢复自动”的可见文字改为图标；Header 统一使用 icon-sm 和现有 tabler:brightness-auto，保留 Tooltip/aria-label 和点击行为。
+- 仅展示调整，版本保持 1.0.8，不替换已发布附件。验证 lint/type-check，并构建与运行既有自动恢复聚焦用例；不新增重复测试。
+
+## 上轮发布
+
 ### 2026-10-13 v1.0.8 主题切换修复与 GlassOps 背景
 
 - 用户批准完整实施、commit/push/release；目标唯一 ShirlyTaylor73/Glassmorphism-Enhanced，分支 fix/theme-background-modes。
