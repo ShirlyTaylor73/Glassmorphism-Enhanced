@@ -15,8 +15,13 @@
 ### 2026-10-13 v1.0.8 主题切换修复与 GlassOps 背景
 
 - 用户批准完整实施、commit/push/release；目标唯一 ShirlyTaylor73/Glassmorphism-Enhanced，分支 fix/theme-background-modes。
-- 状态 in-progress；规格 docs/theme-background-modes_spec.md。先复现循环导致颜色不变/目标提示错误，再移植背景并验证。
+- 状态 in-progress；规格 docs/theme-background-modes_spec.md。旧构建目标提示 3 项失败；独立颜色断言复现浅色连续点击第二次仍 dark。
+- 已修改：无参数切换按实际 isDark 反转，按钮图标与提示表示目标，手动状态可恢复自动。默认背景显式 dark class 采用 GlassOps 同图及滤镜；视频加载/失败不再被旧不透明 loading 层遮住。
+- 参考图 SHA256 42377961822666817def3d3b51b2c236a0f5f631dd1475535d9438a6b7ac551b；检查发现本仓库已跟踪同字节图片，因此复用原资源，不制造图片二进制差异。
 - 保留卡片/地球、自定义媒体、登录和三网；普通点击反转实际颜色，手动状态显示恢复自动。发布 v1.0.8，不覆盖 v1.0.7。
+- 专项测试扩展至 21 项：三种托管模式四次切换/恢复/刷新、北京时间边界和洛杉矶时区、非法值/移动键盘、时钟跳变后刷新、默认图尺寸/位置与失败底色、自定义图片/视频生命周期。视频事件为确定性模拟，不宣称覆盖所有编解码器。
+- 修正测试：Iconify 类名仅包含 collection，改断言实际 data-icon；自定义图片失败使用新 URL 防止内存图缓存绕过网络；系统时钟跳变测试等待后续分钟 tick。lint/type-check 已通过。
+- simplify 复核：复用现有 mode 存储与实际 isDark，删掉循环映射和默认翡翠网格；视频 loading/error 共用新默认背景，不添加第二套背景加载服务。
 
 ## 历史任务
 
@@ -784,3 +789,9 @@
 - Implemented 7 deterministic Playwright baselines: light desktop home, dark mobile home, accessible desktop list, Cobe and tiled earth layouts, light desktop detail and dark mobile detail. All use mocked Komari API/RPC/visitor data, fixed time, disabled animations and hidden dynamic 3D canvas pixels while retaining globe layout boundaries.
 - First baseline generation and repeated comparison both passed 7/7 with system Chrome. Windows system-channel Chrome did not exit cleanly after reporting results, so release validation does not treat that local channel teardown as a product failure; CI installs and runs Playwright's managed Chromium.
 - Added the independent `Visual Regression` workflow for pull requests and `main`, with actual/diff/HTML report artifacts retained for 14 days on failure. Release target is v3.3.0.
+
+### v1.0.8 视觉复核记录
+
+- 普通阈值下 7 张截图中仅两张深色背景超限；为审核浅色也使用临时严格阈值生成全部实际图，未修改正式阈值。
+- 旧 snapshots 有更早版本的卡片/图标/金额漂移。用只读 Vite loader 加载 1cfbbad 的 Header/Background/store 创建参考构建，与本轮源码逐张对比 7 张图，确认卡片、三网和数据一致，本轮差异限背景/目标按钮。
+- 审核图位于本地 test-results/background-review/source-review-0..6.jpg；移动手动状态截图确认“恢复自动”可见且标题截断不溢出。将已审核的七张实际截图写入基线，不放宽阈值。
