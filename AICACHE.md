@@ -15,7 +15,10 @@
 ### 2026-10-13 v1.0.9 发布
 
 - 用户确认核心数为 cpu_cores 的真实逻辑核数后授权继续 push/release，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。
-- 状态 in-progress：包含卡片标题/徽标/核心数/配色及恢复自动图标。main 已核对为 98bdcaf，v1.0.9 不存在，ADMIN 权限确认。
+- 状态 done：v1.0.9 已发布并确认为 Latest，包含卡片标题/徽标/真实逻辑核数/配色及恢复自动图标。main 与 annotated Tag peeled SHA=d83f1ba919d7e7147e8feac7fb4559a037ed55de。
+- Release: https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.9 。push 未出现自动流程，手动 Code Quality run 38382772234 成功后正常 Git/gh 发布。main 首次网络连接失败，正常重试成功，没有强推。
+- 发布包 359 entries、5,924,438 bytes，下载与本地/GitHub digest 一致：SHA256 8a4b17360fa8202556e2a98b6359259252eca532997a82cfcfed8f87cdf074d7。CRC/顶层/版本/作者/URL/short/preview/dist 校验通过。
+- 本交接仅推工作分支，main 留在发布 SHA；未修改生产站点，真实安装待用户验收。
 - 完整回归 132/132 已通过；发布阶段仅变更版本及文档，重跑 lint/build 并检查最终提交包、远端质量检查和下载附件。
 
 ## 已完成：卡片改版
