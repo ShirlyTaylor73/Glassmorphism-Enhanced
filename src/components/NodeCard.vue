@@ -13,7 +13,7 @@ import { formatBytesPerSecondWithConfig, formatBytesWithConfig, formatDateTime, 
 import { getDiskPercentage, getMemoryPercentage, hasTrafficLimit } from '@/utils/nodeMetricsHelper'
 import { getOSImage, getOSName } from '@/utils/osImageHelper'
 import { getRegionCode, getRegionDisplayName } from '@/utils/regionHelper'
-import { formatCurrencyValue, formatPriceWithCycle, getDaysUntilExpired, getExpireStatus, getRemainingValue, isFreePrice, parseTags } from '@/utils/tagHelper'
+import { formatCurrencyValue, formatPriceWithCycle, getDaysUntilExpired, getExpireStatus, getRemainingValue, hasIPv4, hasIPv6, isFreePrice, parseTags } from '@/utils/tagHelper'
 
 const props = withDefaults(defineProps<{
   node: NodeData
@@ -30,6 +30,13 @@ const emit = defineEmits<{
 const appStore = useAppStore()
 const monthlyTrafficUsage = useMonthlyTrafficUsage(() => [props.node])
 const isFavorite = computed(() => appStore.isFavoriteNode(props.node.uuid))
+const supportsIPv4 = computed(() => hasIPv4(props.node.ipv4))
+const supportsIPv6 = computed(() => hasIPv6(props.node.ipv6))
+const osDisplayName = computed(() => getOSName(props.node.os))
+const cpuCoresText = computed(() => {
+  const cores = props.node.cpu_cores
+  return Number.isInteger(cores) && cores > 0 ? `${cores}core` : '—'
+})
 
 function toggleFavorite(): void {
   appStore.toggleFavoriteNode(props.node.uuid)
@@ -127,7 +134,7 @@ const trafficPercentageClass = computed(() => {
     return 'text-warning'
   if (trafficUsedPercentage.value >= 60)
     return 'text-warning'
-  return 'text-success'
+  return 'text-sky-700 dark:text-sky-300/90'
 })
 
 // 是否显示金额：未登录且开启「未登录隐藏价格」时不显示价格 / 剩余价值，
@@ -208,55 +215,86 @@ function hasRegion(region: string | null | undefined): boolean {
     @click="emit('click')"
     @keydown="handleKeyboardOpen"
   >
-    <!-- 头部：在线点 + 名称 -->
+    <!-- GlassOps identity header, preserving the compact metric body. -->
     <template #header>
-      <div class="flex items-center gap-2 min-w-0">
-        <div class="relative size-2.5 shrink-0">
-          <span
-            class="size-2.5 rounded-full block"
-            :class="props.node.online ? 'bg-success' : 'bg-destructive'"
-          />
-          <span
-            v-if="!props.reduceMotion"
-            class="animate-ping absolute inset-0 rounded-full opacity-60"
-            :class="props.node.online ? 'bg-success' : 'bg-destructive'"
-          />
-        </div>
-        <span class="text-sm font-bold flex-1 min-w-0 truncate">{{ props.node.name }}</span>
-        <DataTooltip
-          v-if="nodeMessage"
-          :content="nodeMessageTooltip"
-          placement="top"
-          as="span"
-          class="inline-flex shrink-0 text-amber-500"
-          content-class="w-56 whitespace-pre-line leading-snug text-left"
-        >
-          <Icon icon="tabler:alert-triangle-filled" width="14" height="14" aria-label="节点消息" />
-        </DataTooltip>
-      </div>
-    </template>
-
-    <!-- 头部右侧：OS + 国旗 -->
-    <template #header-extra>
-      <div class="flex gap-1.5 items-center shrink-0">
-        <button
-          type="button"
-          class="inline-flex size-5 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-slate-500/10 hover:text-amber-500"
-          :class="isFavorite && 'text-amber-500'"
-          :aria-label="isFavorite ? `取消收藏 ${props.node.name}` : `收藏 ${props.node.name}`"
-          :title="isFavorite ? '取消收藏' : '收藏节点'"
-          @click.stop="toggleFavorite"
-          @keydown.stop
-        >
-          <Icon :icon="isFavorite ? 'tabler:star-filled' : 'tabler:star'" width="14" height="14" />
-        </button>
-        <img :src="getOSImage(props.node.os)" :alt="getOSName(props.node.os)" class="size-4">
+      <div class="node-card-header-grid grid w-full min-w-0 grid-cols-[2rem_minmax(0,1fr)_auto] grid-rows-[auto_auto] items-center gap-x-2 gap-y-0.5">
         <img
           v-if="hasRegion(props.node.region)"
           :src="`/images/flags/${getRegionCode(props.node.region)}.svg`"
           :alt="getRegionAltText(props.node.region)"
-          class="size-5 shrink-0"
+          class="node-card-flag row-span-2 h-6 w-8 shrink-0 rounded-[4px] object-cover shadow-sm"
         >
+        <div v-else class="node-card-flag row-span-2 flex h-6 w-8 shrink-0 items-center justify-center rounded-[4px] bg-slate-500/10 text-muted-foreground">
+          <Icon icon="tabler:world" width="17" height="17" />
+        </div>
+        <div class="flex min-w-0 items-center gap-1.5">
+          <span class="node-card-title truncate text-sm font-semibold tracking-tight" :title="props.node.name">{{ props.node.name }}</span>
+          <DataTooltip
+            v-if="nodeMessage"
+            :content="nodeMessageTooltip"
+            placement="top"
+            class="inline-flex shrink-0 text-warning"
+            content-class="w-56 whitespace-pre-line leading-snug text-left"
+          >
+            <Icon icon="tabler:alert-triangle-filled" width="14" height="14" aria-label="节点消息" />
+          </DataTooltip>
+        </div>
+        <div
+          class="flex items-center justify-end gap-1 text-[11px] font-semibold"
+          :class="props.node.online ? 'text-emerald-700 dark:text-emerald-300' : 'text-destructive'"
+          data-node-online-status
+        >
+          <button
+            type="button"
+            class="mr-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-slate-500/10 hover:text-amber-500"
+            :class="isFavorite && 'text-amber-500'"
+            :aria-label="isFavorite ? `取消收藏 ${props.node.name}` : `收藏 ${props.node.name}`"
+            :title="isFavorite ? '取消收藏' : '收藏节点'"
+            @click.stop="toggleFavorite"
+            @keydown.stop
+          >
+            <Icon :icon="isFavorite ? 'tabler:star-filled' : 'tabler:star'" width="14" height="14" />
+          </button>
+          <span class="relative size-2 shrink-0" data-node-online-dot>
+            <span class="absolute inset-0 rounded-full" :class="props.node.online ? 'bg-emerald-500 dark:bg-emerald-400' : 'bg-destructive'" />
+            <span
+              v-if="!props.reduceMotion && props.node.online"
+              class="absolute inset-0 animate-ping rounded-full bg-emerald-500 opacity-55 dark:bg-emerald-400"
+            />
+          </span>
+          <span>{{ props.node.online ? '在线' : '离线' }}</span>
+        </div>
+        <div class="col-span-2 col-start-2 flex min-w-0 items-center gap-1.5 text-muted-foreground">
+          <img :src="getOSImage(props.node.os)" :alt="osDisplayName" class="size-3.5 shrink-0">
+          <span
+            class="min-w-0 truncate text-[10px] leading-none"
+            :title="osDisplayName"
+          >
+            {{ osDisplayName }}
+          </span>
+          <span class="shrink-0 text-[10px]" aria-hidden="true">·</span>
+          <span class="shrink-0 text-[10px]">{{ props.node.arch || '-' }}</span>
+          <div class="ml-auto flex shrink-0 items-center justify-end gap-1">
+            <span
+              v-if="supportsIPv4"
+              class="inline-flex items-center gap-0.5 rounded-full border border-selection/30 bg-selection/12 px-1.5 py-px text-[9px] font-semibold text-selection"
+              aria-label="支持 IPv4"
+              title="支持 IPv4"
+            >
+              <span class="size-1 rounded-full bg-current" aria-hidden="true" />
+              V4
+            </span>
+            <span
+              v-if="supportsIPv6"
+              class="inline-flex items-center gap-0.5 rounded-full border border-selection/30 bg-selection/12 px-1.5 py-px text-[9px] font-semibold text-selection"
+              aria-label="支持 IPv6"
+              title="支持 IPv6"
+            >
+              <span class="size-1 rounded-full bg-current" aria-hidden="true" />
+              V6
+            </span>
+          </div>
+        </div>
       </div>
     </template>
 
@@ -283,9 +321,12 @@ function hasRegion(region: string | null | undefined): boolean {
                 <span class="inline-flex items-center text-sky-500" role="img" title="CPU" aria-label="CPU">
                   <Icon :icon="NODE_METRIC_ICONS.cpu" data-node-metric-icon="cpu" width="12" height="12" aria-hidden="true" />
                 </span>
-                <span class="tabular-nums font-medium">{{ (props.node.cpu ?? 0).toFixed(1) }}%</span>
+                <span class="tabular-nums font-medium" :class="cpuStatus === 'error' ? 'text-destructive' : 'text-violet-700 dark:text-violet-300/90'" data-node-percentage="cpu">{{ (props.node.cpu ?? 0).toFixed(1) }}%</span>
               </div>
               <ProgressThin :percentage="props.node.cpu ?? 0" :status="cpuStatus" :height="4" />
+              <div class="text-[10px] text-muted-foreground truncate" data-node-cores title="CPU 逻辑核心数">
+                {{ cpuCoresText }}
+              </div>
             </div>
 
             <div class="flex flex-col gap-1" :title="swapTooltip">
@@ -293,7 +334,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <span class="inline-flex items-center text-emerald-500" role="img" title="内存" aria-label="内存">
                   <Icon :icon="NODE_METRIC_ICONS.memory" data-node-metric-icon="memory" width="12" height="12" aria-hidden="true" />
                 </span>
-                <span class="tabular-nums font-medium">{{ memPercentage.toFixed(1) }}%</span>
+                <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'text-rose-700 dark:text-rose-300/90'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
               </div>
               <ProgressThin :percentage="memPercentage" :status="memStatus" :height="4" />
             </div>
@@ -309,7 +350,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <Icon :icon="NODE_METRIC_ICONS.traffic" data-node-metric-icon="traffic" width="12" height="12" class="shrink-0 text-violet-500" aria-hidden="true" />
                 <span class="truncate">流量</span>
               </span>
-              <span class="tabular-nums font-medium" :class="trafficPercentageClass">
+              <span class="tabular-nums font-medium" :class="trafficPercentageClass" data-node-percentage="traffic">
                 {{ hasTrafficLimit(props.node) ? `${trafficUsedPercentage.toFixed(1)}%` : '∞' }}
               </span>
             </div>
@@ -334,11 +375,11 @@ function hasRegion(region: string | null | undefined): boolean {
                 <Icon :icon="NODE_METRIC_ICONS.cpu" data-node-metric-icon="cpu" width="13" height="13" class="shrink-0 text-sky-500" aria-hidden="true" />
                 <span class="truncate">CPU</span>
               </span>
-              <span class="tabular-nums font-medium">{{ (props.node.cpu ?? 0).toFixed(1) }}%</span>
+              <span class="tabular-nums font-medium" :class="cpuStatus === 'error' ? 'text-destructive' : 'text-violet-700 dark:text-violet-300/90'" data-node-percentage="cpu">{{ (props.node.cpu ?? 0).toFixed(1) }}%</span>
             </div>
             <ProgressThin :percentage="props.node.cpu ?? 0" :status="cpuStatus" :height="4" />
-            <div class="text-[11px] text-muted-foreground truncate">
-              {{ (props.node.load ?? 0).toFixed(2) }}, {{ (props.node.load5 ?? 0).toFixed(2) }}, {{ (props.node.load15 ?? 0).toFixed(2) }}
+            <div class="text-[11px] text-muted-foreground truncate" data-node-cores title="CPU 逻辑核心数">
+              {{ cpuCoresText }}
             </div>
           </div>
 
@@ -349,7 +390,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <Icon :icon="NODE_METRIC_ICONS.memory" data-node-metric-icon="memory" width="13" height="13" class="shrink-0 text-emerald-500" aria-hidden="true" />
                 <span class="truncate">内存</span>
               </span>
-              <span class="tabular-nums font-medium">{{ memPercentage.toFixed(1) }}%</span>
+              <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'text-rose-700 dark:text-rose-300/90'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
             </div>
             <ProgressThin :percentage="memPercentage" :status="memStatus" :height="4" />
             <div class="text-[11px] text-muted-foreground truncate">
@@ -364,7 +405,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <Icon :icon="NODE_METRIC_ICONS.disk" data-node-metric-icon="disk" width="13" height="13" class="shrink-0 text-orange-500" aria-hidden="true" />
                 <span class="truncate">硬盘</span>
               </span>
-              <span class="tabular-nums font-medium">{{ diskPercentage.toFixed(1) }}%</span>
+              <span class="tabular-nums font-medium" :class="diskStatus === 'error' ? 'text-destructive' : 'text-amber-700 dark:text-warning/90'" data-node-percentage="disk">{{ diskPercentage.toFixed(1) }}%</span>
             </div>
             <ProgressThin :percentage="diskPercentage" :status="diskStatus" :height="4" />
             <div class="text-[11px] text-muted-foreground truncate">
@@ -379,7 +420,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <Icon :icon="NODE_METRIC_ICONS.traffic" data-node-metric-icon="traffic" width="13" height="13" class="shrink-0 text-violet-500" aria-hidden="true" />
                 <span class="truncate">流量</span>
               </span>
-              <span class="tabular-nums font-medium" :class="trafficPercentageClass">
+              <span class="tabular-nums font-medium" :class="trafficPercentageClass" data-node-percentage="traffic">
                 {{ hasTrafficLimit(props.node) ? `${trafficUsedPercentage.toFixed(1)}%` : '∞' }}
               </span>
             </div>
@@ -400,11 +441,11 @@ function hasRegion(region: string | null | undefined): boolean {
         <div class="grid gap-1.5" :class="nodeCardMetricGridClass">
           <!-- 实时网速 -->
           <div class="flex flex-col gap-0.5 rounded-lg bg-slate-500/5 min-w-0 overflow-hidden" :class="nodeCardMetricBoxClass">
-            <div class="text-[11px] text-success flex items-center gap-1">
+            <div class="text-[11px] text-rose-700 dark:text-rose-300/90 flex items-center gap-1">
               <Icon icon="tabler:chevron-up" width="11" height="11" />
               <span class="truncate min-w-0 overflow-hidden">{{ formatBytesPerSecond(props.node.net_out ?? 0) }}</span>
             </div>
-            <div class="text-[11px] text-blue-600 flex items-center gap-1">
+            <div class="text-[11px] text-cyan-700 dark:text-cyan-300/90 flex items-center gap-1">
               <Icon icon="tabler:chevron-down" width="11" height="11" />
               <span class="truncate min-w-0 overflow-hidden">{{ formatBytesPerSecond(props.node.net_in ?? 0) }}</span>
             </div>

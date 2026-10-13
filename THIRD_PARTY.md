@@ -47,3 +47,8 @@ All three reviewed projects use the MIT License. The licenses permit use, modifi
 - 复用：`default-background-v2.webp`、浅深色滤镜与移动端定位；不复制卡片、地球或后台实现。
 - 许可证：MIT。Copyright (c) 2025 Tony Liu (tonyliuzj, tony-liu.com)，保留根 LICENSE。
 - 背景图 SHA256：42377961822666817def3d3b51b2c236a0f5f631dd1475535d9438a6b7ac551b
+
+## GlassOps 卡片展示参考
+
+- 来源：本地 komari-glassops c5ba36a，NodeCard.vue 的两行标题、IPv4/IPv6 非空徽标及明暗指标/实时速度色阶。
+- MIT，Copyright (c) 2025 Tony Liu (tonyliuzj, tony-liu.com)。仅移植展示，保留本主题月流量计算及三网/中转来源，不复制其长卡片业务链。

@@ -25,7 +25,9 @@ test('protocols reflect fields and unknown cores never become zero', async ({ pa
   await page.goto('/')
   const card = page.getByRole('button', { name: '查看节点 主控-洛杉矶 详情', exact: true })
   for (const [ipv4, ipv6, cores, expected] of [
-    ['192.*.*.*', '', 2, '2core'], ['', '2001:*:*:*:*:*:*:*', 4, '4core'], [' ', '', 0, '—'],
+    ['192.*.*.*', '', 2, '2core'],
+    ['', '2001:*:*:*:*:*:*:*', 4, '4core'],
+    [' ', '', 0, '—'],
   ] as const) {
     await page.evaluate(({ ipv4, ipv6, cores }) => {
       const root = document.querySelector('#app') as HTMLElement & { __vue_app__: { config: { globalProperties: { $pinia: { _s: Map<string, { nodes: Array<{ ipv4: string, ipv6: string, cpu_cores: number }> }> } } } } }
@@ -39,3 +41,29 @@ test('protocols reflect fields and unknown cores never become zero', async ({ pa
     await expect(card).not.toContainText('192.*.*.*')
   }
 })
+
+for (const dark of [false, true]) {
+  test(`semantic metric colors and long headers: dark=${dark}`, async ({ page }, testInfo) => {
+    await installKomariFixture(page, { dark, hideEarth: true })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    const card = page.getByRole('button', { name: '查看节点 主控-洛杉矶 详情', exact: true })
+    await expect(card.locator('[data-node-percentage="cpu"]')).toHaveClass(/text-violet-700/)
+    await expect(card.locator('[data-node-percentage="memory"]')).toHaveClass(/text-rose-700/)
+    await expect(card.locator('[data-node-percentage="disk"]')).toHaveClass(/text-amber-700/)
+    await expect(card.locator('[data-node-percentage="traffic"]')).toHaveClass(/text-sky-700/)
+    const header = card.locator('.node-card-header-grid')
+    await expect(header).toContainText('Ubuntu')
+    await expect(header).toContainText('aarch64')
+    await page.screenshot({ path: testInfo.outputPath('card-mobile.png') })
+    await page.evaluate(() => {
+      const root = document.querySelector('#app') as HTMLElement & { __vue_app__: { config: { globalProperties: { $pinia: { _s: Map<string, { nodes: Array<Record<string, unknown>> }> } } } } }
+      Object.assign(root.__vue_app__.config.globalProperties.$pinia._s.get('nodes')!.nodes[0]!, { name: '超长节点名称-'.repeat(12), os: 'Unknown operating system with a very long description', region: '', cpu: 99 })
+    })
+    const longCard = page.locator('.node-card').first()
+    await expect(longCard.locator('[data-node-percentage="cpu"]')).toHaveClass(/text-destructive/)
+    expect(await longCard.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
+    await expect(longCard.locator('.node-card-flag')).toBeVisible()
+    await page.screenshot({ path: testInfo.outputPath('long-card-mobile.png') })
+  })
+}
