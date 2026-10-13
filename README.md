@@ -2,7 +2,7 @@
 
 Glassmorphism Enhanced 是一个面向 [Komari Monitor](https://github.com/komari-monitor/komari) 的独立维护主题：用毛玻璃界面、三网质量指标、响应式 NodeCard 和可选的 Transit Carrier Ping，帮助你快速判断节点状态与入口路径。
 
-[![Release](https://img.shields.io/badge/Release-v1.0.7-10b981)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/Release-v1.0.8-10b981)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 [下载 Releases](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases) · [安装](#installation) · [Transit Carrier Ping](#transit-carrier-ping) · [开发](#development)
@@ -184,3 +184,9 @@ Glassmorphism Enhanced 源自 [Komari Glassmorphism](https://github.com/sanrokam
 顶部“后台管理”始终显示，点击进入 Komari 自带的 `/admin`。未登录时由官方后台显示登录流程；本主题不再包含另一套官方公开首页或后台皮肤。旧“隐藏后台入口”配置会被忽略，旧内嵌入口链接仅跳转后台。
 
 主题 PWA 图标与 manifest 已独立，升级后原始许可证与第三方署名保留。“未登录隐藏价格”仅控制本主题展示，不是匿名 API 的数据访问限制。
+
+## 明暗主题与默认背景
+
+主题按钮的图标和提示表示点击目标：浅色时显示月亮“切换为深色主题”，深色时显示太阳“切换为浅色主题”，每次点击都切换到相反颜色。手动选择后可点击旁边的“恢复自动”，重新跟随后台托管设置（默认北京时间 07:00–19:00 浅色）。本地选择会保留，自动状态的提示会标明“当前自动”。
+
+默认背景采用 GlassOps 的 WebP 和明暗滤镜；卡片、地球及自定义图片/视频功能不变。自定义媒体加载或失败时显示对应模式的默认背景。

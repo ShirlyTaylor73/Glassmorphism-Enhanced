@@ -2,6 +2,13 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.0.8 — 2026-10-13
+
+- 修复明暗按钮提示与点击目标不一致，以及深色切到自动仍显示深色的问题；普通点击始终反转实际颜色。
+- 图标和提示统一表示目标颜色，手动模式增加“恢复自动”，保留本地选择及后台/北京时间自动规则。
+- 默认背景采用 GlassOps 同一 WebP、明暗滤镜和移动端定位，保留卡片、地球与自定义媒体；视频加载和失败使用对应默认背景。
+- 增加连续切换、自动恢复、跨时区边界、媒体回退和移动端键盘回归。
+
 ## 1.0.7 — 2026-10-13
 
 - 后台入口始终显示，忽略旧隐藏入口开关，点击直接进入 Komari 官方 `/admin` 登录流程。
