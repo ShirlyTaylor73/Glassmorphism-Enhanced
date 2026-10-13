@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-13 v1.0.9 发布
+
+- 用户确认核心数为 cpu_cores 的真实逻辑核数后授权继续 push/release，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。
+- 状态 in-progress：包含卡片标题/徽标/核心数/配色及恢复自动图标。main 已核对为 98bdcaf，v1.0.9 不存在，ADMIN 权限确认。
+- 完整回归 132/132 已通过；发布阶段仅变更版本及文档，重跑 lint/build 并检查最终提交包、远端质量检查和下载附件。
+
+## 已完成：卡片改版
+
 ### 2026-10-13 首页卡片标题与配色
 
 - 用户批准执行；分支 feat/node-card-header，规格 docs/node-card-header_spec.md，M4 展示调整。

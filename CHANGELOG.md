@@ -2,6 +2,14 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.0.9 — 2026-10-13
+
+- 首页卡片参考 GlassOps 调整标题：国旗、名称、系统与架构，右侧收藏、在线状态及 V4/V6 徽标，双栈并排。
+- CPU 下方平均负载改为探针 cpu_cores 对应的逻辑核心数，如 2core；缺失或无效显示 —。
+- 百分比采用指标语义色阶，实时上传粉红、下载青色；保留严重告警、流量计算、价格隐私和三网/中转。
+- 恢复自动改为图标按钮，保留悬停提示和无障碍名称。
+- 完整 Playwright/visual 132/132 通过，未修改本轮视觉基线。
+
 ## 1.0.8 — 2026-10-13
 
 - 修复明暗按钮提示与点击目标不一致，以及深色切到自动仍显示深色的问题；普通点击始终反转实际颜色。
