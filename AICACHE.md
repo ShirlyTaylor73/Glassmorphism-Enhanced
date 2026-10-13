@@ -12,6 +12,12 @@
 
 ## 当前任务
 
+### 2026-10-14 v1.1.0 发布（进行中）
+
+- 用户授权发布三网排序新功能，按兼容功能 SemVer 升为 1.1.0；唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced，权限 ADMIN。
+- 发布前 main=983d99c，v1.1.0 不存在，三个工作流 active；检查实际 push 运行，必要时手动 Code Quality 通过后发布。
+- 继承完整回归 141/141 + 最终专项 8/8，发布阶段验证 lint/type-check/build/ZIP；不覆盖历史版本、不部署生产。
+
 ### 2026-10-14 三网拖动排序（已完成，Ready for review）
 
 - 用户确认整行拖动、当前浏览器保存。规格 docs/carrier-order_spec.md，分支 feat/carrier-order；不升版本、不 push/release。
@@ -22,7 +28,6 @@
 - simplify 已复核，抽取共用面板与手势 composable，无新增依赖/API/后台配置/统计逻辑改动。
 - production build 通过，保留已知 globe 大包警告。候选包 komari-theme-Glassmorphism-build-659ffa0.zip，版本 1.0.11，5,926,094 bytes，359 entries，SHA256 958977211edb836de5e128de2bba61736bc71a6da568309c49097408500cfee6。CRC/三项顶层/manifest/preview/无测试文件检查通过。
 - 候选包来自最终代码提交 659ffa0，之后仅文档交接提交；未安装生产站点。正式发布需用户另行授权并按兼容功能 SemVer 规则选择版本。
-
 
 ### 2026-10-14 v1.0.11 发布
 
