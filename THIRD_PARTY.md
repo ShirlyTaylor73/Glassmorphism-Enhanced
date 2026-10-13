@@ -52,3 +52,5 @@ All three reviewed projects use the MIT License. The licenses permit use, modifi
 
 - 来源：本地 komari-glassops c5ba36a，NodeCard.vue 的两行标题、IPv4/IPv6 非空徽标及明暗指标/实时速度色阶。
 - MIT，Copyright (c) 2025 Tony Liu (tonyliuzj, tony-liu.com)。仅移植展示，保留本主题月流量计算及三网/中转来源，不复制其长卡片业务链。
+
+- 顶部统计卡片的浅色渐变、内高光与柔和阴影同样参考其 general-metric-card 样式，底色和边框继续使用本主题共享配色变量。

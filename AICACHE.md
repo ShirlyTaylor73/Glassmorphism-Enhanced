@@ -12,6 +12,17 @@
 
 ## 当前任务
 
+### 2026-10-14 顶部统计卡片清晰度（M4）
+
+- 用户批准优化顶部统计卡片边界，参考 GlassOps 与当前节点卡片。分支 fix/summary-card-clarity，保留前轮未发布 Core 格式修正。
+- 原因：统计 cardClass 的 bg-background/50、border-none、hover:bg-background 覆盖 CardX 的 bg-card 类，使其脱离统一玻璃卡片规则。
+- 调整：移除冲突类，让统计卡片复用节点卡片的玻璃底色、边框、模糊和深色/悬停变量；浅色专属细渐变、内高光与柔和阴影参考 GlassOps。布局、数据、Tooltip、财务点击、权限不变。
+- 验证计划：lint/type-check、既有完整视觉回归、明暗截图人工检查、production ZIP；不新增镜像样式的测试。版本不变，不发布。
+- 验证：lint/type-check/diff-check 通过，完整 Playwright/visual 132/132 通过，未改 snapshots/阈值。独立临时浏览器检查 2/2 通过：明暗统计卡片与节点底色相同、1px 边框与阴影、移动无横向溢出；桌面/悬停/移动截图已查看。
+- simplify 复核：仅删除统计卡片冲突类并添加浅色专属装饰，深色/自定义配色沿用共享规则；不更改数据或全局 CardX。提交后重建候选包，不推送或发布。
+
+## 上轮任务
+
 ### 2026-10-13 CPU 核心数格式微调
 
 - 用户要求统一为 `X Core`，例如 `2 Core`；保留真实 cpu_cores 和无效值 — 的逻辑，同步既有测试断言。
