@@ -49,7 +49,8 @@ for (const dark of [false, true]) {
     await page.goto('/')
     const card = page.getByRole('button', { name: '查看节点 主控-洛杉矶 详情', exact: true })
     await expect(card.locator('[data-node-percentage="cpu"]')).toHaveClass(/text-violet-700/)
-    await expect(card.locator('[data-node-percentage="memory"]')).toHaveClass(/text-rose-700/)
+    await expect(card.locator('[data-node-percentage="memory"]')).toHaveCSS('color', 'rgb(214, 75, 145)')
+    await expect(card.locator('[data-node-upload]')).toHaveCSS('color', 'rgb(214, 75, 145)')
     await expect(card.locator('[data-node-percentage="disk"]')).toHaveClass(/text-amber-700/)
     await expect(card.locator('[data-node-percentage="traffic"]')).toHaveClass(/text-sky-700/)
     const header = card.locator('.node-card-header-grid')
@@ -58,10 +59,12 @@ for (const dark of [false, true]) {
     await page.screenshot({ path: testInfo.outputPath('card-mobile.png') })
     await page.evaluate(() => {
       const root = document.querySelector('#app') as HTMLElement & { __vue_app__: { config: { globalProperties: { $pinia: { _s: Map<string, { nodes: Array<Record<string, unknown>> }> } } } } }
-      Object.assign(root.__vue_app__.config.globalProperties.$pinia._s.get('nodes')!.nodes[0]!, { name: '超长节点名称-'.repeat(12), os: 'Unknown operating system with a very long description', region: '', cpu: 99 })
+      Object.assign(root.__vue_app__.config.globalProperties.$pinia._s.get('nodes')!.nodes[0]!, { name: '超长节点名称-'.repeat(12), os: 'Unknown operating system with a very long description', region: '', cpu: 99, ram: 999999999999 })
     })
     const longCard = page.locator('.node-card').first()
     await expect(longCard.locator('[data-node-percentage="cpu"]')).toHaveClass(/text-destructive/)
+    await expect(longCard.locator('[data-node-percentage="memory"]')).toHaveClass(/text-destructive/)
+    await expect(longCard.locator('[data-node-percentage="memory"]')).not.toHaveCSS('color', 'rgb(214, 75, 145)')
     expect(await longCard.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
     await expect(longCard.locator('.node-card-flag')).toBeVisible()
     await page.screenshot({ path: testInfo.outputPath('long-card-mobile.png') })

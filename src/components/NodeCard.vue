@@ -334,7 +334,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <span class="inline-flex items-center text-emerald-500" role="img" title="内存" aria-label="内存">
                   <Icon :icon="NODE_METRIC_ICONS.memory" data-node-metric-icon="memory" width="12" height="12" aria-hidden="true" />
                 </span>
-                <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'text-rose-700 dark:text-rose-300/90'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
+                <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'node-metric-pink'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
               </div>
               <ProgressThin :percentage="memPercentage" :status="memStatus" :height="4" />
             </div>
@@ -390,7 +390,7 @@ function hasRegion(region: string | null | undefined): boolean {
                 <Icon :icon="NODE_METRIC_ICONS.memory" data-node-metric-icon="memory" width="13" height="13" class="shrink-0 text-emerald-500" aria-hidden="true" />
                 <span class="truncate">内存</span>
               </span>
-              <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'text-rose-700 dark:text-rose-300/90'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
+              <span class="tabular-nums font-medium" :class="memStatus === 'error' ? 'text-destructive' : 'node-metric-pink'" data-node-percentage="memory">{{ memPercentage.toFixed(1) }}%</span>
             </div>
             <ProgressThin :percentage="memPercentage" :status="memStatus" :height="4" />
             <div class="text-[11px] text-muted-foreground truncate">
@@ -441,7 +441,7 @@ function hasRegion(region: string | null | undefined): boolean {
         <div class="grid gap-1.5" :class="nodeCardMetricGridClass">
           <!-- 实时网速 -->
           <div class="flex flex-col gap-0.5 rounded-lg bg-slate-500/5 min-w-0 overflow-hidden" :class="nodeCardMetricBoxClass">
-            <div class="text-[11px] text-rose-700 dark:text-rose-300/90 flex items-center gap-1">
+            <div class="text-[11px] node-metric-pink flex items-center gap-1" data-node-upload>
               <Icon icon="tabler:chevron-up" width="11" height="11" />
               <span class="truncate min-w-0 overflow-hidden">{{ formatBytesPerSecond(props.node.net_out ?? 0) }}</span>
             </div>
@@ -615,6 +615,11 @@ function hasRegion(region: string | null | undefined): boolean {
 </template>
 
 <style scoped>
+/* The same pink in both themes; destructive remains reserved for alarms. */
+.node-metric-pink {
+  color: #d64b91;
+}
+
 .node-card {
   position: relative;
   overflow: hidden;
