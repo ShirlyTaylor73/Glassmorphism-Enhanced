@@ -15,7 +15,10 @@
 ### 2026-10-14 v1.0.10 发布
 
 - 用户授权 push/release；版本 1.0.10 包含统计卡片边界、明暗统一粉色、X Core 格式。唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。
-- 已核对 ADMIN、远端 main=d83f1ba，v1.0.10 不存在。状态 in-progress：版本/文档更新后验证并正常推送，检查实际 Actions，再发布与下载校验。
+- 状态 done：已发布 https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.10 并确认为 Latest。main/annotated Tag peeled SHA=2d73cab3b0b6bc9fbd4d3c49949ca74b746d1269。
+- push 未自动触发，手动 Code Quality run 38434957144 成功后正常 Git/gh 发布；无覆盖旧 Tag。
+- 附件 komari-theme-Glassmorphism-build-2d73cab.zip，359 entries、5,924,440 bytes；下载与本地/GitHub digest 一致，SHA256 ca578a4b9d65b81db053803ca62424e8cee719ef39da9b033f98203f1eec6a44，CRC/顶层/manifest/preview/dist 通过。
+- 发布后交接仅推工作分支，不再推进 main；未部署生产站点。
 - 验证沿用统计卡片阶段完整 132/132 和最终粉色 2/2；发布阶段重跑 lint/build，功能代码不再改变。
 
 ## 已完成候选调整

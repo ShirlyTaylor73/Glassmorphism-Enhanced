@@ -2,6 +2,8 @@
 
 ## 当前发布：v1.0.10（2026-10-14）
 
+已发布且为 Latest：[v1.0.10](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.10)，main/Tag 为 `2d73cab`。[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38434957144) 成功。push 未自动触发，本次手动发布；下载附件与本地/GitHub digest 一致，5,924,440 bytes。
+
 用户授权向 ShirlyTaylor73/Glassmorphism-Enhanced 推送并发布。说明见 [v1.0.10](release-notes-v1.0.10.md)。保留旧 Tag/Release，以实际运行状态核验 Actions；若无自动触发，手动 Code Quality 成功后正常 Git/gh 发布并下载核对。
 
 ## 历史发布：v1.0.9（2026-10-13）
