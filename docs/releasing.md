@@ -1,6 +1,12 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.0.11（2026-10-14）
+## 当前发布：v1.1.0（2026-10-14）
+
+已发布且为 Latest：[v1.1.0](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.0)，main/annotated Tag 为 `1538a35`。三网拖动排序属于兼容新功能，按 SemVer 升级 minor。用户授权推送发布到自己的仓库。
+
+Push 无自动运行，[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38459979972) 成功后正常发布。下载 ZIP 与本地/GitHub digest 一致：5,926,110 bytes，SHA256 `c2ed5f9fdca5a47c95146086db73a3dcf3bced344c78628a4e32aff837ea5585`。CRC/布局/版本/预览核验通过；发布后交接仅推工作分支，未部署生产。说明见 [发布说明](release-notes-v1.1.0.md)。
+
+## 历史发布：v1.0.11（2026-10-14）
 
 已发布且为 Latest：[v1.0.11](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.11)，main/Tag 为 `983d99c`。[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38455052568) 成功；push 未自动触发，本次手动发布，下载 ZIP 与本地/GitHub digest 一致，5,924,472 bytes。
 

@@ -12,11 +12,16 @@
 
 ## 当前任务
 
-### 2026-10-14 v1.1.0 发布（进行中）
+### 2026-10-14 v1.1.0 发布（已完成）
 
 - 用户授权发布三网排序新功能，按兼容功能 SemVer 升为 1.1.0；唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced，权限 ADMIN。
 - 发布前 main=983d99c，v1.1.0 不存在，三个工作流 active；检查实际 push 运行，必要时手动 Code Quality 通过后发布。
 - 继承完整回归 141/141 + 最终专项 8/8，发布阶段验证 lint/type-check/build/ZIP；不覆盖历史版本、不部署生产。
+- 正式 Release 已发布并确认为 Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.0 。main/annotated Tag peeled SHA=1538a356c91defe6628bea5593c2a5b7fee4736a。
+- push 无自动运行，手动 Code Quality 38459979972 成功后发布；未修改 Actions 或覆盖旧 Tag。
+- 安装包 komari-theme-Glassmorphism-build-1538a35.zip，5,926,110 bytes、359 entries；下载与本地/GitHub digest 一致。SHA256 c2ed5f9fdca5a47c95146086db73a3dcf3bced344c78628a4e32aff837ea5585。CRC/顶层/manifest/preview 通过。
+- 发布后仅向工作分支推送交接记录，main 保持发布提交；未部署用户站点。
+
 
 ### 2026-10-14 三网拖动排序（已完成，Ready for review）
 
