@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-13 v1.0.8 主题切换修复与 GlassOps 背景
+
+- 用户批准完整实施、commit/push/release；目标唯一 ShirlyTaylor73/Glassmorphism-Enhanced，分支 fix/theme-background-modes。
+- 状态 in-progress；规格 docs/theme-background-modes_spec.md。先复现循环导致颜色不变/目标提示错误，再移植背景并验证。
+- 保留卡片/地球、自定义媒体、登录和三网；普通点击反转实际颜色，手动状态显示恢复自动。发布 v1.0.8，不覆盖 v1.0.7。
+
+## 历史任务
+
 ### 2026-10-13 v1.0.7 发布
 
 - 用户已授权 push 并 release；本次将作者信息与后台清理一起作为 1.0.7 发布，保留既有 v1.0.6。

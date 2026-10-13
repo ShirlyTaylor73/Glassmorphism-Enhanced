@@ -16,6 +16,10 @@ const REGION_FIXTURES = [
 ] as const
 
 export interface VisualFixtureOptions {
+  managedThemeMode?: 'beijing' | 'light' | 'dark'
+  preserveStorage?: boolean
+  background?: { backgroundEnabled: boolean, backgroundType?: 'image' | 'video', lightBackgroundUrl?: string, darkBackgroundUrl?: string, backgroundBlur?: number, backgroundOverlay?: number }
+
   hideAdminEntryWhenLoggedOut?: boolean
   hidePriceWhenLoggedOut?: boolean
   nodeCount?: number
@@ -460,7 +464,8 @@ export async function installKomariFixture(page: Page, options: VisualFixtureOpt
   const settings = {
     transitCarrierPingEnabled: options.transitEnabled ?? options.transit ?? false,
     transitCarrierPingRules: options.transitRules ?? (options.transit ? 'RelayNode|TargetNode|Relay-Target-v6\nRelayNode|TargetB|Relay-Target-v6' : ''),
-    themeMode: options.dark ? 'dark' : 'light',
+    themeMode: options.managedThemeMode ?? (options.dark ? 'dark' : 'light'),
+    ...options.background,
     dataUpdateInterval: 60,
     rpcTransportMode: 'http',
     defaultViewMode: options.viewMode ?? 'card',
@@ -485,7 +490,10 @@ export async function installKomariFixture(page: Page, options: VisualFixtureOpt
     )).join('\n'),
   }
 
-  if (options.useNativeClock) {
+  if (options.preserveStorage) {
+    // Caller owns deterministic clock and storage initialization.
+  }
+  else if (options.useNativeClock) {
     await page.addInitScript(() => {
       localStorage.clear()
       sessionStorage.clear()
