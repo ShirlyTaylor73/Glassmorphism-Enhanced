@@ -15,8 +15,11 @@
 ### 2026-10-13 v1.0.8 主题切换修复与 GlassOps 背景
 
 - 用户批准完整实施、commit/push/release；目标唯一 ShirlyTaylor73/Glassmorphism-Enhanced，分支 fix/theme-background-modes。
-- 状态 release-in-progress；规格 docs/theme-background-modes_spec.md 已完成复核。旧构建目标提示 3 项失败；独立颜色断言复现浅色连续点击第二次仍 dark。
-- 最终本地验证：完整 Playwright/visual 125/125、lint/type-check PASS，七张基线逐张审核并与修改前实际构建对照，未改阈值。代码提交 d7b5e42，基线提交 d4358d4，版本准备 1.0.8。
+- 状态 done；规格 docs/theme-background-modes_spec.md 已完成复核。旧构建目标提示 3 项失败；独立颜色断言复现浅色连续点击第二次仍 dark。
+- 最终本地验证：完整 Playwright/visual 125/125、lint/type-check/production build/diff-check PASS，七张基线逐张审核并与修改前实际构建对照，未改阈值。代码提交 d7b5e42，基线提交 d4358d4。
+- 已发布 https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.8 ，main/annotated Tag peeled SHA=98bdcaf976ac7ce2c1773e9e975532a23c319ef3。push 未产生自动 workflow，手动 Code Quality run 38353938081 成功；随后正常 Git/gh 手动发布，未绕过失败检查。
+- 发布附件 komari-theme-Glassmorphism-build-98bdcaf.zip，359 entries、5,923,398 bytes；下载与本地/GitHub digest 一致，SHA256 30dbea8480af0a3f25e322b584b82f2307974d2adc0013566586f7bee011f027。CRC、版本/作者/URL/short、preview/dist 一致性、背景哈希及无测试资源通过。
+- 本发布后交接仅推工作分支，main 留在发布提交。生产未部署，真实安装和用户浏览器状态仍待验收。
 - 已修改：无参数切换按实际 isDark 反转，按钮图标与提示表示目标，手动状态可恢复自动。默认背景显式 dark class 采用 GlassOps 同图及滤镜；视频加载/失败不再被旧不透明 loading 层遮住。
 - 参考图 SHA256 42377961822666817def3d3b51b2c236a0f5f631dd1475535d9438a6b7ac551b；检查发现本仓库已跟踪同字节图片，因此复用原资源，不制造图片二进制差异。
 - 保留卡片/地球、自定义媒体、登录和三网；普通点击反转实际颜色，手动状态显示恢复自动。发布 v1.0.8，不覆盖 v1.0.7。

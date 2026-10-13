@@ -2,6 +2,8 @@
 
 ## 当前发布：v1.0.8（2026-10-13）
 
+已发布：[v1.0.8](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.8)，main/Tag 指向 `98bdcaf`。[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38353938081) 成功；push 无自动运行，本次手动发布。本地 125/125；下载附件与本地及 GitHub digest 一致，5,923,398 bytes。
+
 用户已授权修复、推送并发布，目标仅 ShirlyTaylor73/Glassmorphism-Enhanced。内容为点击目标/实际明暗一致、恢复自动及 GlassOps 默认背景，说明见 [v1.0.8](release-notes-v1.0.8.md)。保持旧 Tag；以实际 Actions 状态决定等待自动发布或手动 Code Quality 后发布，不绕过失败检查。Git 本地代理暂不可用时只对单次命令使用 `-c http.proxy=`，不修改全局代理或凭据。
 
 ## 历史发布：v1.0.7（2026-10-13）
