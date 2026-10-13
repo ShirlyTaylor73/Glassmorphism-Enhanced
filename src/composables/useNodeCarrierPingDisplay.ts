@@ -107,7 +107,10 @@ export function useNodeCarrierPingDisplay(
   transit?: ComputedRef<{ relay: string, task: string, reason: string, carriers: TransitCarrierEstimate[] } | undefined>,
 ) {
   const appStore = useAppStore()
-  const carrierStats = computed(() => transit?.value?.carriers ?? aggregateChinaCarrierPingStats(source.taskStats.value))
+  const carrierStats = computed(() => {
+    const stats = transit?.value?.carriers ?? aggregateChinaCarrierPingStats(source.taskStats.value)
+    return [...stats].sort((a, b) => appStore.carrierOrder.indexOf(a.key) - appStore.carrierOrder.indexOf(b.key))
+  })
 
   const carrierDisplays = computed<CarrierPingDisplay[]>(() => carrierStats.value.map((carrier) => {
     const isZh = appStore.lang === 'zh-CN'

@@ -2,9 +2,9 @@
 import type { NodeData } from '@/stores/nodes'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
+import CarrierPingPanel from '@/components/CarrierPingPanel.vue'
 import { Badge } from '@/components/ui/badge'
 import { CardX } from '@/components/ui/card-x'
-import { DataTooltip } from '@/components/ui/data-tooltip'
 import { ProgressThin } from '@/components/ui/progress-thin'
 import { useMonthlyTrafficUsage } from '@/composables/useMonthlyTrafficUsage'
 import { useNodeCarrierPingSource } from '@/composables/useNodeCarrierPingSource'
@@ -493,97 +493,16 @@ function hasRegion(region: string | null | undefined): boolean {
 
         <!-- 联通 / 电信 / 移动三网延迟 + 丢包 -->
         <div class="grid grid-cols-2 gap-1.5">
-          <button
-            type="button"
-            data-node-ping-bars="latency"
-            class="group/panel relative flex flex-col rounded-lg bg-slate-500/5"
+          <CarrierPingPanel
+            v-for="metric in (['latency', 'loss'] as const)"
+            :key="metric"
+            :metric="metric"
+            :node-name="props.node.name"
+            :carriers="carrierDisplays"
+            :is-transit="isTransit"
             :class="[nodeCardCarrierPingPanelClass, !props.node.online ? 'blur-xs opacity-50' : '']"
-            :aria-label="`${props.node.name} 三网延迟监测`"
-            @click.stop="emit('pingClick')"
-          >
-            <div class="flex items-center justify-between text-[11px] leading-none">
-              <span class="text-muted-foreground">延迟</span>
-              <span class="text-[10px] text-muted-foreground/70">{{ isTransit ? (appStore.lang === 'zh-CN' ? '中转估算' : 'Transit estimate') : '三网' }}</span>
-            </div>
-
-            <div class="grid min-h-0 flex-1 grid-rows-3 gap-1">
-              <div
-                v-for="carrier in carrierDisplays"
-                :key="`${carrier.key}-latency`"
-                :data-carrier-ping="`${carrier.key}-latency`"
-                class="flex min-h-0 min-w-0 flex-col gap-[2px]"
-                :title="carrier.latencyTooltip"
-              >
-                <div class="flex min-w-0 items-center justify-between gap-1 text-[10px] leading-none">
-                  <span class="flex min-w-0 items-center gap-1 text-muted-foreground">
-                    <span class="size-1.5 shrink-0 rounded-full" :class="carrier.dotClass" />
-                    <span class="truncate">{{ carrier.label }}</span>
-                  </span>
-                  <span class="shrink-0 tabular-nums font-medium">{{ carrier.latencyDisplay }}</span>
-                </div>
-                <div
-                  class="grid h-1.5 min-w-0 items-end gap-[1px] opacity-80 group-hover/panel:opacity-100"
-                  :style="{ gridTemplateColumns: `repeat(${carrier.latencyBars.length}, minmax(0, 1fr))` }"
-                >
-                  <DataTooltip
-                    v-for="bar in carrier.latencyBars" :key="bar.key"
-                    placement="top" :content="bar.tooltip" class="h-full w-full"
-                  >
-                    <span
-                      class="block h-full w-full rounded-[1px] transition-transform duration-150 group-hover/data-tooltip:scale-y-160 group-hover/panel:opacity-60 group-hover/data-tooltip:!opacity-100"
-                      :class="bar.className"
-                    />
-                  </DataTooltip>
-                </div>
-              </div>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            data-node-ping-bars="loss"
-            class="group/panel relative flex flex-col rounded-lg bg-slate-500/5"
-            :class="[nodeCardCarrierPingPanelClass, !props.node.online ? 'blur-xs opacity-50' : '']"
-            :aria-label="`${props.node.name} 三网丢包监测`"
-            @click.stop="emit('pingClick')"
-          >
-            <div class="flex items-center justify-between text-[11px] leading-none">
-              <span class="text-muted-foreground">丢包</span>
-              <span class="text-[10px] text-muted-foreground/70">{{ isTransit ? (appStore.lang === 'zh-CN' ? '中转估算' : 'Transit estimate') : '三网' }}</span>
-            </div>
-
-            <div class="grid min-h-0 flex-1 grid-rows-3 gap-1">
-              <div
-                v-for="carrier in carrierDisplays"
-                :key="`${carrier.key}-loss`"
-                :data-carrier-ping="`${carrier.key}-loss`"
-                class="flex min-h-0 min-w-0 flex-col gap-[2px]"
-                :title="carrier.lossTooltip"
-              >
-                <div class="flex min-w-0 items-center justify-between gap-1 text-[10px] leading-none">
-                  <span class="flex min-w-0 items-center gap-1 text-muted-foreground">
-                    <span class="size-1.5 shrink-0 rounded-full" :class="carrier.dotClass" />
-                    <span class="truncate">{{ carrier.label }}</span>
-                  </span>
-                  <span class="shrink-0 tabular-nums font-medium">{{ carrier.lossDisplay }}</span>
-                </div>
-                <div
-                  class="grid h-1.5 min-w-0 items-end gap-[1px] opacity-80 group-hover/panel:opacity-100"
-                  :style="{ gridTemplateColumns: `repeat(${carrier.lossBars.length}, minmax(0, 1fr))` }"
-                >
-                  <DataTooltip
-                    v-for="bar in carrier.lossBars" :key="bar.key"
-                    placement="top" :content="bar.tooltip" class="h-full w-full"
-                  >
-                    <span
-                      class="block h-full w-full rounded-[1px] transition-transform duration-150 group-hover/data-tooltip:scale-y-160 group-hover/panel:opacity-60 group-hover/data-tooltip:!opacity-100"
-                      :class="bar.className"
-                    />
-                  </DataTooltip>
-                </div>
-              </div>
-            </div>
-          </button>
+            @open="emit('pingClick')"
+          />
         </div>
 
         <!-- 自定义标签 -->

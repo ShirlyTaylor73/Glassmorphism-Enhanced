@@ -1,11 +1,13 @@
 import type { PermissionKey, VerifyLoginOptions } from '@/services/auth.service'
 import type { MeInfo, PublicSettings } from '@/utils/api'
+import type { ChinaCarrierKey } from '@/utils/carrierPing'
 import type { EarthArcMode } from '@/utils/earthArcs'
 import type { ByteDecimalsConfig } from '@/utils/helper'
 import { useStorageAsync } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { getAuthSession, requirePermission, setAuthSessionFromLogin, verifyLogin } from '@/services/auth.service'
+import { DEFAULT_CARRIER_ORDER, moveCarrier, normalizeCarrierOrder } from '@/utils/carrierOrder'
 
 import { parseTransitCarrierPingRules } from '@/utils/transitCarrierPing'
 
@@ -891,6 +893,23 @@ const useAppStore = defineStore('app', () => {
   const publicSettings = ref<PublicSettings>()
   const nodeSelectedGroup = useStorageAsync<string>('nodeSelectedGroup', 'all', localStorage)
   const favoriteNodeIds = useStorageAsync<string[]>('theme:favorite-nodes:v1', [], localStorage)
+  const storedCarrierOrder = useStorageAsync<unknown>('theme:carrier-order:v1', [...DEFAULT_CARRIER_ORDER], localStorage, {
+    serializer: {
+      read: (value) => {
+        try {
+          return JSON.parse(value)
+        }
+        catch {
+          return null
+        }
+      },
+      write: value => JSON.stringify(value),
+    },
+  })
+  const carrierOrder = computed(() => normalizeCarrierOrder(storedCarrierOrder.value))
+  function reorderCarrier(source: ChinaCarrierKey, target: ChinaCarrierKey): void {
+    storedCarrierOrder.value = moveCarrier(carrierOrder.value, source, target)
+  }
   const isLoggedIn = ref<boolean>(getAuthSession().authenticated)
   const authStatus = ref(getAuthSession().status)
   const privateFeaturesAllowed = computed(() => authStatus.value === 'authenticated')
@@ -1306,6 +1325,8 @@ const useAppStore = defineStore('app', () => {
     lang,
     nodeSelectedGroup,
     favoriteNodeIds,
+    carrierOrder,
+    reorderCarrier,
     favoriteNodeIdSet,
     isFavoriteNode,
     toggleFavoriteNode,
