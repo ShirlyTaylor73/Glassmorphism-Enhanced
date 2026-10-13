@@ -1,6 +1,10 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.0.9（2026-10-13）
+## 当前发布：v1.0.10（2026-10-14）
+
+用户授权向 ShirlyTaylor73/Glassmorphism-Enhanced 推送并发布。说明见 [v1.0.10](release-notes-v1.0.10.md)。保留旧 Tag/Release，以实际运行状态核验 Actions；若无自动触发，手动 Code Quality 成功后正常 Git/gh 发布并下载核对。
+
+## 历史发布：v1.0.9（2026-10-13）
 
 已发布且标记 Latest：[v1.0.9](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.9)，main/Tag 为 `d83f1ba`。[Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38382772234) 手动运行成功，本地 132/132。自动 push 工作流仍未启动，本次手动 Tag/Release；附件下载 SHA256 与 GitHub/本地一致，5,924,438 bytes。
 

@@ -2,6 +2,13 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.0.10 — 2026-10-14
+
+- 顶部统计卡片复用节点卡片玻璃底色和边框，浅色增加细渐变、内高光和柔和阴影，明暗边界更清晰。
+- 正常内存百分比与上传速度在明暗模式统一使用粉色 #D64B91，严重使用率及到期告警仍保留红色。
+- CPU 逻辑核心数统一格式为 `X Core`（如 `2 Core`），无效值仍为 —。
+- 不修改统计计算、三网请求、价格权限或布局。统计卡片阶段完整回归 132/132，最终粉色专项 2/2；lint/type-check/build 通过。
+
 ## 1.0.9 — 2026-10-13
 
 - 首页卡片参考 GlassOps 调整标题：国旗、名称、系统与架构，右侧收藏、在线状态及 V4/V6 徽标，双栈并排。

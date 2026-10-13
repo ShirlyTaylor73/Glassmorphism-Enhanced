@@ -2,7 +2,7 @@
 
 Glassmorphism Enhanced 是一个面向 [Komari Monitor](https://github.com/komari-monitor/komari) 的独立维护主题：用毛玻璃界面、三网质量指标、响应式 NodeCard 和可选的 Transit Carrier Ping，帮助你快速判断节点状态与入口路径。
 
-[![Release](https://img.shields.io/badge/Release-v1.0.9-10b981)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/Release-v1.0.10-10b981)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 [下载 Releases](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases) · [安装](#installation) · [Transit Carrier Ping](#transit-carrier-ping) · [开发](#development)
