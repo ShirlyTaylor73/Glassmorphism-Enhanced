@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-13 CPU 核心数格式微调
+
+- 用户要求统一为 `X Core`，例如 `2 Core`；保留真实 cpu_cores 和无效值 — 的逻辑，同步既有测试断言。
+- 仅文字格式，本轮保持版本 1.0.9，不替换已发布附件；本地提交、lint 和生产构建验证。
+- lint、production build（含 type-check）、diff-check 均通过；未新增测试，既有核心数断言同步。未推送/发布。
+
+## 上轮任务
+
 ### 2026-10-13 v1.0.9 发布
 
 - 用户确认核心数为 cpu_cores 的真实逻辑核数后授权继续 push/release，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。

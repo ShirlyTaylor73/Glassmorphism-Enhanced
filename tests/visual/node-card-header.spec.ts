@@ -10,7 +10,7 @@ for (const size of ['mini', 'compact', 'comfortable', 'large'] as const) {
     await expect(card.getByLabel('支持 IPv4', { exact: true })).toBeVisible()
     await expect(card.getByLabel('支持 IPv6', { exact: true })).toBeVisible()
     await expect(card.locator('[data-node-online-status]')).toContainText('在线')
-    await expect(card.locator('[data-node-cores]')).toHaveText('1core')
+    await expect(card.locator('[data-node-cores]')).toHaveText('1 Core')
     await card.getByRole('button', { name: '收藏 TargetNode', exact: true }).click()
     await expect(page).toHaveURL('/')
     await expect(card.getByRole('button', { name: '取消收藏 TargetNode', exact: true })).toBeVisible()
@@ -25,8 +25,8 @@ test('protocols reflect fields and unknown cores never become zero', async ({ pa
   await page.goto('/')
   const card = page.getByRole('button', { name: '查看节点 主控-洛杉矶 详情', exact: true })
   for (const [ipv4, ipv6, cores, expected] of [
-    ['192.*.*.*', '', 2, '2core'],
-    ['', '2001:*:*:*:*:*:*:*', 4, '4core'],
+    ['192.*.*.*', '', 2, '2 Core'],
+    ['', '2001:*:*:*:*:*:*:*', 4, '4 Core'],
     [' ', '', 0, '—'],
   ] as const) {
     await page.evaluate(({ ipv4, ipv6, cores }) => {

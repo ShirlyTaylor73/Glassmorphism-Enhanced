@@ -35,7 +35,7 @@ const supportsIPv6 = computed(() => hasIPv6(props.node.ipv6))
 const osDisplayName = computed(() => getOSName(props.node.os))
 const cpuCoresText = computed(() => {
   const cores = props.node.cpu_cores
-  return Number.isInteger(cores) && cores > 0 ? `${cores}core` : '—'
+  return Number.isInteger(cores) && cores > 0 ? `${cores} Core` : '—'
 })
 
 function toggleFavorite(): void {
