@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 2026-10-14 四项卡片细节微调
+
+- 用户批准实施，分支 fix/card-detail-polish，规格 docs/card-detail-polish_spec.md。
+- 黄色期限现为 10 天，改为 15 天并保留 5 天红色；移除标题架构；联通点紫色；mini 补齐三项标签。共享期限同步列表/详情，不改数据与三网算法。
+- 本地测试/构建/提交，不自动发布。
+
+## 历史任务
+
 ### 2026-10-14 v1.0.10 发布
 
 - 用户授权 push/release；版本 1.0.10 包含统计卡片边界、明暗统一粉色、X Core 格式。唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。

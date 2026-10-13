@@ -55,7 +55,8 @@ for (const dark of [false, true]) {
     await expect(card.locator('[data-node-percentage="traffic"]')).toHaveClass(/text-sky-700/)
     const header = card.locator('.node-card-header-grid')
     await expect(header).toContainText('Ubuntu')
-    await expect(header).toContainText('aarch64')
+    await expect(header).not.toContainText('aarch64')
+    await expect(header).not.toContainText('·')
     await page.screenshot({ path: testInfo.outputPath('card-mobile.png') })
     await page.evaluate(() => {
       const root = document.querySelector('#app') as HTMLElement & { __vue_app__: { config: { globalProperties: { $pinia: { _s: Map<string, { nodes: Array<Record<string, unknown>> }> } } } } }
@@ -70,3 +71,32 @@ for (const dark of [false, true]) {
     await page.screenshot({ path: testInfo.outputPath('long-card-mobile.png') })
   })
 }
+
+
+test('expiry warning includes day fifteen but not day sixteen', async ({ page }) => {
+  await installKomariFixture(page, { hideEarth: true, expiryThresholds: true })
+  await page.goto('/')
+  const card = page.getByRole('button', { name: '查看节点 主控-洛杉矶 详情', exact: true })
+  const expiry = card.getByText('剩余', { exact: true }).locator('..')
+  for (const days of [5, 6, 13, 15, 16]) {
+    await page.evaluate((days) => {
+      const root = document.querySelector('#app') as HTMLElement & { __vue_app__: { config: { globalProperties: { $pinia: { _s: Map<string, { nodes: Array<{ expired_at: string }> }> } } } } }
+      root.__vue_app__.config.globalProperties.$pinia._s.get('nodes')!.nodes[0]!.expired_at = new Date(Date.now() + days * 86400000).toISOString()
+    }, days)
+    await expect(expiry).toContainText(`剩余${days}天`)
+    await expect(expiry).toHaveClass(days <= 5 ? /text-destructive/ : days <= 15 ? /text-warning/ : /text-muted-foreground/)
+  }
+})
+
+test('mini keeps all metric labels and purple Unicom dots', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 320, height: 844 })
+  await installKomariFixture(page, { hideEarth: true, nodeCardSize: 'mini', transit: true })
+  await page.goto('/')
+  const card = page.getByRole('button', { name: '查看节点 TargetNode 详情', exact: true })
+  for (const label of ['CPU', '内存', '流量'])
+    await expect(card.getByText(label, { exact: true })).toBeVisible()
+  for (const metric of ['latency', 'loss'])
+    await expect(card.locator(`[data-carrier-ping="unicom-${metric}"] .bg-violet-500`)).toBeVisible()
+  expect(await card.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
+  await page.screenshot({ path: testInfo.outputPath('mini-labels.png') })
+})
