@@ -2,6 +2,8 @@
 
 ## 当前发布：v1.0.11（2026-10-14）
 
+已发布且为 Latest：[v1.0.11](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.11)，main/Tag 为 `983d99c`。[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38455052568) 成功；push 未自动触发，本次手动发布，下载 ZIP 与本地/GitHub digest 一致，5,924,472 bytes。
+
 用户授权发布到 ShirlyTaylor73/Glassmorphism-Enhanced，内容为 15 天黄色提醒、标题架构移除、联通紫点和 mini 标签完整显示。说明见 [v1.0.11](release-notes-v1.0.11.md)。保留旧 Tag，检查实际 Actions；无自动运行时手动质量检查通过后发布。
 
 ## 历史发布：v1.0.10（2026-10-14）

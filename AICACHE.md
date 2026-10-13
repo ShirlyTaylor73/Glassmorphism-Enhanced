@@ -15,7 +15,10 @@
 ### 2026-10-14 v1.0.11 发布
 
 - 用户授权发布，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced；版本 1.0.11，保留历史版本。
-- 状态 in-progress：已核对 ADMIN、main=2d73cab 和无 v1.0.11 Tag。发布阶段仅版本与文档，重跑 lint/build 后正常 push，核对 Actions、Tag 和下载资产。
+- 状态 done：已发布 https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.0.11 并确认为 Latest，main/annotated Tag peeled SHA=983d99c40b6ec67127aaf423e32436bcc6f059e5。
+- push 无自动运行，手动 Code Quality run 38455052568 成功后正常 Git/gh 发布，未覆盖历史版本。
+- 附件 komari-theme-Glassmorphism-build-983d99c.zip，359 entries、5,924,472 bytes；下载与本地/GitHub digest 一致：SHA256 071b33be868f3b9469b8e7ac8e14c7ff07228d0ba832a2d4db7bf3ef76a7d87f。CRC/结构/manifest/preview/dist 通过。
+- 发布后交接仅推工作分支，main 保持发布 SHA，未部署用户站点。
 - 验证沿用本轮卡片专项 9/9、完整 133 项通过及更新旧可访问性断言后重跑 1/1；不冒称最终全量重跑。
 
 ## 已完成：卡片微调
