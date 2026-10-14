@@ -16,6 +16,7 @@ Glassmorphism Enhanced 是一个面向 [Komari Monitor](https://github.com/komar
 - **Glassmorphism UI**：毛玻璃卡片、浅色 / 深色 / 北京时间自动模式、动态背景、色觉友好配色与减弱动画。
 - **三网延迟与丢包**：分别展示中国联通、电信、移动的 RTT、丢包率和历史色块；同一运营商的多个 Ping Task 会聚合。
 - **三网顺序自定义**：在任一节点的延迟或丢包面板拖动运营商整行，所有节点同步排序；手机长按后拖动，也支持聚焦行后按 Alt+↑/↓。顺序保存在当前浏览器，刷新保留，不改变其他访客的设置或后台任务顺序。
+- 每个运营商以小卡片呈现；拖动时整张卡片悬浮跟随，相邻卡片让位，松手归位。关闭页面动画或启用系统减少动态效果时保留位置反馈并省略过渡。
 - **Transit Carrier Ping**：可选地用“用户 → Relay → Target”的两段数据派生三网估算，明确区分估算值和 direct 探测。
 - **多种 NodeCard 尺寸**：`mini`、`compact`、`comfortable`、`large`，并提供适合密集巡检的列表视图。
 - **地球与拓扑可视化**：realistic、Cobe 和 tiled 地图，支持自动、常驻、upstream 与关闭连线模式。

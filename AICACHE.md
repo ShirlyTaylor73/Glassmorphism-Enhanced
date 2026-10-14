@@ -12,6 +12,16 @@
 
 ## 当前任务
 
+### 三网小卡片拖动效果修正（完成，Ready for review）
+
+- 用户确认整行小卡片悬浮跟随、占位、跨中线让位与落位；分支 fix/carrier-drag-cards，规格 docs/carrier-drag-cards_spec.md，M4，不升版本、不发布。
+- 共享内容组件保证浮层与原卡片名称/数值/历史一致；Teleport 浮层避免裁切，局部 transform 预览，160ms 落位后一次提交共享顺序。取消不保存，滚动/失焦/窗口变化收回浮层；原点击隔离/手机长按/键盘/中转保持。
+- 系统减少动态效果、主题关闭动画与密集节点减少特效时省略过渡。明暗淡底/边框/圆角保留 compact 与 mini 尺寸。
+- 失败用例提交 917894c；实现 fa9e593。旧实现新增浮层测试失败；最终完整 Playwright 145/145 通过（包含 11 项排序专项），lint/type-check/build/diff-check 通过。未更改视觉截图基线/阈值。
+- 人工查看桌面浅色拖动、手机 mini、深色正常动画截图；Chrome 模拟触摸通过，不代表真机 Safari 或生产安装验证。simplify 复核共用内容和清理路径，无额外依赖或统计改动。
+- 生产候选包 komari-theme-Glassmorphism-build-fa9e593.zip，版本仍为 1.1.0，5,927,254 bytes / 359 entries，SHA256 57a302bc58d38d84c373264e33c84ace49772e4b416b187eae359fdbbb976e45。CRC/顶层/manifest/preview/无测试文件通过；已知 globe 大包警告保留。
+- 随后仅提交文档交接；候选包对应最终代码提交，不替换线上主题或已发布 v1.1.0 附件。
+
 ### 2026-10-14 v1.1.0 发布（已完成）
 
 - 用户授权发布三网排序新功能，按兼容功能 SemVer 升为 1.1.0；唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced，权限 ADMIN。
@@ -21,7 +31,6 @@
 - push 无自动运行，手动 Code Quality 38459979972 成功后发布；未修改 Actions 或覆盖旧 Tag。
 - 安装包 komari-theme-Glassmorphism-build-1538a35.zip，5,926,110 bytes、359 entries；下载与本地/GitHub digest 一致。SHA256 c2ed5f9fdca5a47c95146086db73a3dcf3bced344c78628a4e32aff837ea5585。CRC/顶层/manifest/preview 通过。
 - 发布后仅向工作分支推送交接记录，main 保持发布提交；未部署用户站点。
-
 
 ### 2026-10-14 三网拖动排序（已完成，Ready for review）
 
@@ -910,7 +919,3 @@
 - 普通阈值下 7 张截图中仅两张深色背景超限；为审核浅色也使用临时严格阈值生成全部实际图，未修改正式阈值。
 - 旧 snapshots 有更早版本的卡片/图标/金额漂移。用只读 Vite loader 加载 1cfbbad 的 Header/Background/store 创建参考构建，与本轮源码逐张对比 7 张图，确认卡片、三网和数据一致，本轮差异限背景/目标按钮。
 - 审核图位于本地 test-results/background-review/source-review-0..6.jpg；移动手动状态截图确认“恢复自动”可见且标题截断不溢出。将已审核的七张实际截图写入基线，不放宽阈值。
-
-## 三网小卡片拖动效果修正（进行中）
-
-用户确认实施，分支 fix/carrier-drag-cards，规格 docs/carrier-drag-cards_spec.md；M4，不发布。
