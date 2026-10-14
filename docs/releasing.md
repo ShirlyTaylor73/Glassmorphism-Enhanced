@@ -1,6 +1,12 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.1.2（2026-10-14）
+## 当前发布：v1.2.0（2026-10-14）
+
+已发布并标记 Latest：[v1.2.0](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.0)，main/annotated Tag 为 `8a97d21`。包含 GlassOps 双地球视觉、节点动态光轨与三网无分隔线；用户授权向自己的仓库推送发布。
+
+Push 无自动运行，[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38521756753) 成功后发布。完整回归161/161与100节点专项1/1通过；下载ZIP与本地/GitHub digest一致，6,024,210 bytes / 361 entries，SHA256 `92548f1dea81e46885e0b7b07eaf0467841f9ff6cf928e55b881776e79291db4`。CRC/布局/manifest/preview/夜景纹理通过；交接仅推工作分支，未部署生产。详见 [发布说明](release-notes-v1.2.0.md)。
+
+## 历史发布：v1.1.2（2026-10-14）
 
 已发布且为 Latest：[v1.1.2](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.2)，main/Tag 为 `63e44f6`。用户授权发布三网外框移除和共享分隔线，保留历史版本。
 

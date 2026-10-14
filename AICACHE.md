@@ -12,7 +12,7 @@
 
 ## 当前任务
 
-### GlassOps 双地球迁移与 v1.2.0 发布（进行中）
+### GlassOps 双地球迁移与 v1.2.0 发布（已完成）
 
 - 用户批准完整方案，分支 feat/glassops-earth-migration；规格 docs/glassops-earth-migration_spec.md。M4，保留三网无分隔线，不升版本、不发布。
 - 用户最新授权发布，兼容功能版本定为 1.2.0；仅向 ShirlyTaylor73/Glassmorphism-Enhanced 写入，权限 ADMIN，发布前 main=63e44f6，无 v1.2.0。
@@ -20,6 +20,11 @@
 - 已迁移 c5ba36a 双地球视觉、共享节点光轨、动画生命周期和资源署名；完整回归158/158通过，8项真实像素/布局、5项光轨纯逻辑通过，lint/type-check/build/diff-check通过。
 - 此前 Git 提交因审批服务额度失败未执行；本轮审批恢复，迁移实现提交 04465e1。
 - 发布前最终完整回归 161/161；补充100节点运行时渲染器/连线模式切换与页面隐藏恢复专项1/1。lint/type-check/diff-check通过，未改原截图基线。真实设备及生产站点尚未安装验收。
+- 正式 Release 已发布并为 Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.0 。main/annotated Tag peeled SHA=8a97d21116dd0590a7f5432f20a615b790e30212。
+- push 无自动运行；手动 Code Quality 38521756753 成功后正常发布，无覆盖历史版本。生产ZIP 6,024,210 bytes / 361 entries，比v1.1.2增加96,948 bytes。
+- 附件 komari-theme-Glassmorphism-build-8a97d21.zip，下载与本地/GitHub digest一致：SHA256 92548f1dea81e46885e0b7b07eaf0467841f9ff6cf928e55b881776e79291db4。CRC/顶层/版本/署名/preview/夜景纹理通过。
+- 发布后交接只推工作分支，main保持发布SHA；未替换用户线上主题。
+
 
 ### 三网移除全部分隔线（完成，Ready for review）
 
