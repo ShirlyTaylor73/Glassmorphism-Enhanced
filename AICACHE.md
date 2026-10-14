@@ -12,6 +12,12 @@
 
 ## 当前任务
 
+### 2026-10-14 v1.1.1 发布（进行中）
+
+- 用户授权发布卡片拖动效果修正，版本 1.1.1，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。
+- 发布前远端 main=1538a35，v1.1.1 不存在，权限 ADMIN；检查实际 Actions，无自动运行则手动 Code Quality 成功后正常发布。
+- 继承完整回归 145/145，发布阶段 lint/type-check/build/ZIP 校验；不覆盖历史版本、不部署线上。
+
 ### 三网小卡片拖动效果修正（完成，Ready for review）
 
 - 用户确认整行小卡片悬浮跟随、占位、跨中线让位与落位；分支 fix/carrier-drag-cards，规格 docs/carrier-drag-cards_spec.md，M4，不升版本、不发布。

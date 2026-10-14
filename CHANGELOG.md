@@ -2,6 +2,13 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.1.1 — 2026-10-14
+
+- 三网每个运营商整行改为淡底、细边框、圆角小卡片，明暗主题和 mini 布局保持清晰。
+- 拖起后完整卡片悬浮跟随鼠标或手指，相邻卡片跨中线平滑让位，松手归位后同步所有节点。
+- 取消拖动回原位不保存；保留触摸滚动、键盘排序、点击隔离与本地持久化，遵循减少动画设置。
+- 完整回归 145/145 通过，未修改视觉基线，不改变三网数据与计算。
+
 ## 1.1.0 — 2026-10-14
 
 - 新增三网整行拖动排序：任意节点调整后，所有节点的延迟与丢包面板同步更新；名称、颜色、数值与历史条整体移动。
