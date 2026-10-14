@@ -54,7 +54,7 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
       <span class="text-muted-foreground">{{ label }}</span>
       <span class="text-[10px] text-muted-foreground/70">{{ isTransit ? (app.lang === 'zh-CN' ? '中转估算' : 'Transit estimate') : '三网' }}</span>
     </button>
-    <div class="carrier-sort-list grid min-h-0 flex-1 grid-rows-3 gap-1">
+    <div class="grid min-h-0 flex-1 grid-rows-3 gap-1">
       <div
         v-for="carrier in carriers"
         :key="carrier.key"
@@ -93,26 +93,6 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
 .carrier-sort-row {
   -webkit-touch-callout: none;
   padding: 2px 4px;
-}
-.carrier-sort-list {
-  position: relative;
-}
-.carrier-sort-list::before,
-.carrier-sort-list::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: color-mix(in srgb, var(--foreground) 12%, transparent);
-  pointer-events: none;
-}
-/* Two shared separators sit in the 4px gaps and stay put while rows move. */
-.carrier-sort-list::before {
-  top: calc((100% - 2px) / 3);
-}
-.carrier-sort-list::after {
-  bottom: calc((100% - 2px) / 3);
 }
 .carrier-dragging .carrier-sort-row {
   transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
