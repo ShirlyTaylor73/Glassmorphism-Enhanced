@@ -12,11 +12,15 @@
 
 ## 当前任务
 
-### 2026-10-14 v1.1.1 发布（进行中）
+### 2026-10-14 v1.1.1 发布（已完成）
 
 - 用户授权发布卡片拖动效果修正，版本 1.1.1，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。
 - 发布前远端 main=1538a35，v1.1.1 不存在，权限 ADMIN；检查实际 Actions，无自动运行则手动 Code Quality 成功后正常发布。
 - 继承完整回归 145/145，发布阶段 lint/type-check/build/ZIP 校验；不覆盖历史版本、不部署线上。
+- Release 已发布并确认为 Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.1 。main/annotated Tag peeled SHA=ca516527806b2f0960761cb25a0b86d9ff1fd91c。
+- push 无自动运行，手动 Code Quality 38504082790 成功后发布。附件 komari-theme-Glassmorphism-build-ca51652.zip，5,927,251 bytes / 359 entries。
+- 下载附件与本地/GitHub digest 一致，SHA256 4da5f0386b34ee8e2735f1c4e534c93a695e52b16f2afe3cac23479a350726e1；CRC/顶层/manifest/preview 通过。交接仅推工作分支，不再推进同版本 main。
+
 
 ### 三网小卡片拖动效果修正（完成，Ready for review）
 

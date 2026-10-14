@@ -1,6 +1,12 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.1.0（2026-10-14）
+## 当前发布：v1.1.1（2026-10-14）
+
+已发布并标记 Latest：[v1.1.1](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.1)，main/Tag 为 `ca51652`。用户授权发布三网小卡片拖动效果修正，保留历史版本。
+
+Push 无自动运行，[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38504082790) 成功后发布。下载包与本地/GitHub digest 一致，5,927,251 bytes，SHA256 `4da5f0386b34ee8e2735f1c4e534c93a695e52b16f2afe3cac23479a350726e1`。CRC/布局/manifest/preview 核验通过；本地完整回归 145/145。交接仅推工作分支，未部署生产。详见 [发布说明](release-notes-v1.1.1.md)。
+
+## 历史发布：v1.1.0（2026-10-14）
 
 已发布且为 Latest：[v1.1.0](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.0)，main/annotated Tag 为 `1538a35`。三网拖动排序属于兼容新功能，按 SemVer 升级 minor。用户授权推送发布到自己的仓库。
 
