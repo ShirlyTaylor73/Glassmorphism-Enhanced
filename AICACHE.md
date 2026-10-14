@@ -12,6 +12,14 @@
 
 ## 当前任务
 
+### 三网悬停边框与浅色光轨（完成，Ready for review）
+
+- 用户明确授权两项样式修正。分支 fix/carrier-hover-light-trails，代码提交 072b0f4，M4。
+- 三网每行默认无框，鼠标悬停/键盘focus-visible显示圆角内描边；hover媒体查询避免触摸粘滞，不改变盒模型和拖动。
+- 光轨原本已有GlassOps明暗配色；浅色进一步加深蓝青/琥珀/紫色，提高主体不透明度，线宽2px并使用白色细光晕与暗色阴影增强对比；深色配色与1.6px线宽保持。
+- 完整回归162/162；新增hover-trails专项1/1（悬停/移开/键盘/不抖动/明暗实时切换）。lint/type-check/build/diff-check通过，未改截图基线；悬停及浅色地球截图已查看。
+- 生产候选包 komari-theme-Glassmorphism-build-072b0f4.zip，版本仍1.2.0；CRC/顶层/manifest/preview通过。未推送发布、未替换线上主题。
+
 ### GlassOps 双地球迁移与 v1.2.0 发布（已完成）
 
 - 用户批准完整方案，分支 feat/glassops-earth-migration；规格 docs/glassops-earth-migration_spec.md。M4，保留三网无分隔线，不升版本、不发布。
@@ -24,7 +32,6 @@
 - push 无自动运行；手动 Code Quality 38521756753 成功后正常发布，无覆盖历史版本。生产ZIP 6,024,210 bytes / 361 entries，比v1.1.2增加96,948 bytes。
 - 附件 komari-theme-Glassmorphism-build-8a97d21.zip，下载与本地/GitHub digest一致：SHA256 92548f1dea81e46885e0b7b07eaf0467841f9ff6cf928e55b881776e79291db4。CRC/顶层/版本/署名/preview/夜景纹理通过。
 - 发布后交接只推工作分支，main保持发布SHA；未替换用户线上主题。
-
 
 ### 三网移除全部分隔线（完成，Ready for review）
 
