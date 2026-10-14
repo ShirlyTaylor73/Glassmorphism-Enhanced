@@ -24,19 +24,19 @@ export function getEarthMeteorColors(isDark: boolean, index: number): EarthMeteo
   ]
   const lightPalettes: EarthMeteorColors[] = [
     {
-      tail: 'rgba(3, 105, 161, 0.02)',
-      body: 'rgba(2, 132, 199, 0.88)',
-      head: 'rgba(8, 145, 178, 1)',
+      tail: 'rgba(3, 105, 161, 0.08)',
+      body: 'rgba(3, 105, 161, 0.96)',
+      head: 'rgba(14, 116, 144, 1)',
     },
     {
-      tail: 'rgba(180, 83, 9, 0.02)',
-      body: 'rgba(217, 119, 6, 0.88)',
-      head: 'rgba(245, 158, 11, 1)',
+      tail: 'rgba(180, 83, 9, 0.08)',
+      body: 'rgba(180, 83, 9, 0.96)',
+      head: 'rgba(194, 65, 12, 1)',
     },
     {
-      tail: 'rgba(91, 33, 182, 0.02)',
-      body: 'rgba(124, 58, 237, 0.78)',
-      head: 'rgba(13, 148, 136, 1)',
+      tail: 'rgba(91, 33, 182, 0.08)',
+      body: 'rgba(109, 40, 217, 0.96)',
+      head: 'rgba(15, 118, 110, 1)',
     },
   ]
 

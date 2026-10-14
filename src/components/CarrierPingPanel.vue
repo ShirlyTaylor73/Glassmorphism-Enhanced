@@ -93,9 +93,21 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
 .carrier-sort-row {
   -webkit-touch-callout: none;
   padding: 2px 4px;
+  border-radius: 0.375rem;
+  transition: box-shadow 160ms ease;
+}
+.carrier-sort-row:focus-visible {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 35%, transparent);
+}
+@media (hover: hover) {
+  .carrier-sort-row:hover:not(.carrier-placeholder) {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 25%, transparent);
+  }
 }
 .carrier-dragging .carrier-sort-row {
-  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition:
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 160ms ease;
 }
 .carrier-placeholder {
   background: color-mix(in srgb, var(--primary) 8%, transparent);

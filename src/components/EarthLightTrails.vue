@@ -66,7 +66,7 @@ defineExpose({ renderFrame })
 </script>
 
 <template>
-  <svg ref="root" class="earth-light-trails" data-earth-trails aria-hidden="true" :data-flight-mode="mode">
+  <svg ref="root" class="earth-light-trails" :class="{ 'earth-light-trails--light': !isDark }" data-earth-trails aria-hidden="true" :data-flight-mode="mode">
     <g v-for="flight in flights" :key="flight.id" :data-earth-flight="flight.id" :data-flight-from="flight.from.join(',')" :data-flight-to="flight.to.join(',')" style="display: none">
       <defs>
         <linearGradient :id="flight.gradient" gradientUnits="userSpaceOnUse">
@@ -91,5 +91,11 @@ defineExpose({ renderFrame })
   pointer-events: none;
   overflow: visible;
   filter: drop-shadow(0 0 2px rgb(103 232 249 / 0.6));
+}
+.earth-light-trails--light {
+  filter: drop-shadow(0 0 1px rgb(255 255 255 / 0.85)) drop-shadow(0 1px 1px rgb(15 23 42 / 0.35));
+}
+.earth-light-trails--light path {
+  stroke-width: 2;
 }
 </style>
