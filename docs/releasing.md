@@ -1,6 +1,12 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.1.1（2026-10-14）
+## 当前发布：v1.1.2（2026-10-14）
+
+已发布且为 Latest：[v1.1.2](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.2)，main/Tag 为 `63e44f6`。用户授权发布三网外框移除和共享分隔线，保留历史版本。
+
+Push 无自动运行，[手动 Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38507698547) 成功后发布。下载附件与本地/GitHub digest 一致，5,927,262 bytes，SHA256 `815f86d44441b578052fe0775c65167000c7b26f94b696a8d2b275be68b49dd6`。CRC/布局/manifest/preview 通过，本地完整回归 145/145。交接只推工作分支，未部署生产。详见 [发布说明](release-notes-v1.1.2.md)。
+
+## 历史发布：v1.1.1（2026-10-14）
 
 已发布并标记 Latest：[v1.1.1](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.1)，main/Tag 为 `ca51652`。用户授权发布三网小卡片拖动效果修正，保留历史版本。
 

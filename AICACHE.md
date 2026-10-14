@@ -12,11 +12,15 @@
 
 ## 当前任务
 
-### 2026-10-14 v1.1.2 发布（进行中）
+### 2026-10-14 v1.1.2 发布（已完成）
 
 - 用户授权发布三网边框简化，版本 1.1.2，目标仅 ShirlyTaylor73/Glassmorphism-Enhanced。
 - 远端 main=ca51652，权限 ADMIN，v1.1.2 不存在；核对实际 Actions，必要时手动 Code Quality 成功后发布。
 - 继承完整回归 145/145；发布阶段验证 lint/type-check/build/ZIP，不覆盖历史版本、不部署生产。
+- Release 已发布并标记 Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.2 。main/annotated Tag peeled SHA=63e44f6e300e50c426be7a1d8c787108a3192f37。
+- push 无自动运行；手动 Code Quality 38507698547 成功后发布。安装包 komari-theme-Glassmorphism-build-63e44f6.zip，5,927,262 bytes / 359 entries。
+- 下载与本地/GitHub digest 一致，SHA256 815f86d44441b578052fe0775c65167000c7b26f94b696a8d2b275be68b49dd6；CRC/顶层/manifest/preview 通过。交接仅推工作分支，main 保持发布 SHA。
+
 
 ### 三网边框合并（完成，Ready for review）
 
