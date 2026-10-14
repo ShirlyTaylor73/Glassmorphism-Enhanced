@@ -12,6 +12,11 @@
 
 ## 当前任务
 
+### v1.2.1 发布（进行中）
+
+- 用户授权发布悬停边框和浅色光轨，版本1.2.1，仅向ShirlyTaylor73/Glassmorphism-Enhanced写入。
+- 沿用完整回归162/162及专项1/1；发布阶段检查lint/type-check/build/ZIP和实际Actions，不覆盖历史版本、不部署线上。
+
 ### 三网悬停边框与浅色光轨（完成，Ready for review）
 
 - 用户明确授权两项样式修正。分支 fix/carrier-hover-light-trails，代码提交 072b0f4，M4。

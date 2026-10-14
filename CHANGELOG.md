@@ -2,6 +2,12 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.2.1 — 2026-10-14
+
+- 三网行默认无边框，鼠标悬停或键盘聚焦时显示圆角内描边，移开后隐藏且布局不抖动。
+- 浅色主题光轨加深蓝青、琥珀和紫色，提高不透明度并略微加粗，调整光晕提升亮背景可见度；深色效果保持。
+- 完整回归162项与新增交互专项通过，未修改视觉基线。
+
 ## 1.2.0 — 2026-10-14
 
 - 迁移 GlassOps 双地球视觉：贴图实时昼夜、城市灯光、大气层；点阵经纬网、环形轨道和星芒，保持原首页位置与尺寸。
