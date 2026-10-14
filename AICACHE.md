@@ -12,6 +12,11 @@
 
 ## 当前任务
 
+### GlassOps 双地球迁移（进行中）
+
+- 用户批准完整方案，分支 feat/glassops-earth-migration；规格 docs/glassops-earth-migration_spec.md。M4，保留三网无分隔线，不升版本、不发布。
+- 先采集旧布局基线与编写光轨聚焦失败测试；源快照 c5ba36a。
+
 ### 三网移除全部分隔线（完成，Ready for review）
 
 - 用户明确要求去掉剩余分隔线，与 CPU/内存区域风格统一。分支 fix/carrier-borderless，代码提交 9245d8e，M4。

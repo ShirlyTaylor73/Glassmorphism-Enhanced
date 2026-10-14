@@ -16,6 +16,7 @@ const REGION_FIXTURES = [
 ] as const
 
 export interface VisualFixtureOptions {
+  stopEarth?: boolean
   disablePageAnimation?: boolean
   managedThemeMode?: 'beijing' | 'light' | 'dark'
   preserveStorage?: boolean
@@ -474,7 +475,7 @@ export async function installKomariFixture(page: Page, options: VisualFixtureOpt
     earthRenderer: options.earthRenderer ?? 'realistic',
     earthArcMode: options.earthArcMode ?? 'auto',
     hideEarth: options.hideEarth ?? false,
-    stopEarth: true,
+    stopEarth: options.stopEarth ?? true,
     visitorInfoEnabled: true,
     colorVisionMode: options.colorVisionFriendly ? '色觉友好' : '标准',
     hideAdminEntryWhenLoggedOut: options.hideAdminEntryWhenLoggedOut,

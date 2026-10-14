@@ -1,0 +1,58 @@
+{
+  "realistic-1280": {
+    "box": {
+      "x": 730,
+      "y": 69,
+      "width": 448,
+      "height": 448
+    },
+    "center": {
+      "x": 954.0,
+      "y": 293.0
+    },
+    "diameterReference": 366.9403558991884,
+    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+  },
+  "realistic-390": {
+    "box": {
+      "x": 16,
+      "y": 81,
+      "width": 358,
+      "height": 358
+    },
+    "center": {
+      "x": 195.0,
+      "y": 260.0
+    },
+    "diameterReference": 293.22465940158355,
+    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+  },
+  "cobe-1280": {
+    "box": {
+      "x": 730,
+      "y": 25,
+      "width": 448,
+      "height": 448
+    },
+    "center": {
+      "x": 954.0,
+      "y": 249.0
+    },
+    "diameterReference": 358.40000000000003,
+    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+  },
+  "cobe-390": {
+    "box": {
+      "x": 16,
+      "y": 49,
+      "width": 358,
+      "height": 358
+    },
+    "center": {
+      "x": 195.0,
+      "y": 228.0
+    },
+    "diameterReference": 286.40000000000003,
+    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+  }
+}
