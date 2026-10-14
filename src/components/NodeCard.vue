@@ -500,6 +500,7 @@ function hasRegion(region: string | null | undefined): boolean {
             :node-name="props.node.name"
             :carriers="carrierDisplays"
             :is-transit="isTransit"
+            :reduce-motion="props.reduceMotion"
             :class="[nodeCardCarrierPingPanelClass, !props.node.online ? 'blur-xs opacity-50' : '']"
             @open="emit('pingClick')"
           />

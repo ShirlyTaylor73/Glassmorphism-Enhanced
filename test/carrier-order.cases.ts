@@ -159,7 +159,6 @@ test.describe('touch carrier sorting', () => {
   })
 })
 
-
 test('floating carrier card follows pointer and neighbors make room before commit', async ({ page }) => {
   await open(page)
   const row = page.locator('[data-carrier-ping="mobile-latency"]').first()
@@ -173,6 +172,9 @@ test('floating carrier card follows pointer and neighbors make room before commi
   const floating = page.locator('[data-carrier-drag-overlay]')
   await expect(floating).toBeVisible()
   await expect(floating).toContainText('移动')
+  const floatingBox = (await floating.boundingBox())!
+  expect(Math.abs(floatingBox.y - b.y)).toBeLessThan(2)
+  expect(Math.abs(floatingBox.x - a.x - 10)).toBeLessThan(3)
   await expect(row).toHaveAttribute('data-drag-placeholder', 'true')
   await expect.poll(async () => (await neighbor.boundingBox())!.y).toBeGreaterThan(b.y + 5)
   await allOrders(page, DEFAULT)
@@ -182,3 +184,28 @@ test('floating carrier card follows pointer and neighbors make room before commi
   await expect(floating).toHaveCount(0)
   await allOrders(page, DEFAULT)
 })
+
+for (const reduced of [false, true]) {
+  test(`dark mini card animates landing and respects reduced motion: ${reduced}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' })
+    await installKomariFixture(page, { dark: true, nodeCardSize: 'mini', hideEarth: true, pingTaskOrdering: true, disablePageAnimation: false })
+    await page.goto('/')
+    const row = page.locator('[data-carrier-ping="mobile-loss"]').first()
+    const top = page.locator('[data-carrier-ping="unicom-loss"]').first()
+    await row.scrollIntoViewIfNeeded()
+    const a = (await row.boundingBox())!
+    const b = (await top.boundingBox())!
+    await page.mouse.move(a.x + 20, a.y + a.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(b.x + 20, b.y + b.height / 2, { steps: 8 })
+    const overlay = page.locator('[data-carrier-drag-overlay]')
+    await expect(overlay).toBeVisible()
+    await expect(overlay).toHaveCSS('transform', reduced ? 'none' : 'matrix(1.035, 0, 0, 1.035, 0, 0)')
+    await page.screenshot({ path: `test-results/carrier-drag-dark-${reduced}.png` })
+    await page.mouse.up()
+    await expect(overlay).toHaveCount(0)
+    await allOrders(page, ['mobile', 'unicom', 'telecom'])
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+  })
+}

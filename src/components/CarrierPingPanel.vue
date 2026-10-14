@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CarrierPingDisplay } from '@/composables/useNodeCarrierPingDisplay'
 import { computed } from 'vue'
-import { DataTooltip } from '@/components/ui/data-tooltip'
+import CarrierPingCardContent from '@/components/CarrierPingCardContent.vue'
 import { useCarrierDrag } from '@/composables/useCarrierDrag'
 import { useAppStore } from '@/stores/app'
 
@@ -10,10 +10,13 @@ const props = defineProps<{
   nodeName: string
   carriers: CarrierPingDisplay[]
   isTransit: boolean
+  reduceMotion?: boolean
 }>()
 const emit = defineEmits<{ open: [] }>()
 const app = useAppStore()
-const { dragging, target, start, keyboard } = useCarrierDrag()
+const reducedMotion = computed(() => !!props.reduceMotion || app.disablePageAnimation)
+const { dragging, floating, floatingStyle, offsets, settling, start, keyboard } = useCarrierDrag(() => reducedMotion.value)
+const floatingCarrier = computed(() => props.carriers.find(carrier => carrier.key === dragging.value))
 const label = computed(() => props.metric === 'latency' ? '延迟' : '丢包')
 const instruction = computed(() => app.lang === 'zh-CN'
   ? '拖动排序；手机长按拖动；Alt+上下键调整顺序，回车查看详情'
@@ -37,6 +40,7 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
   <div
     role="group"
     :data-node-ping-bars="metric"
+    :class="{ 'carrier-reduce-motion': reducedMotion, 'carrier-dragging': dragging }"
     class="group/panel relative flex flex-col rounded-lg bg-slate-500/5"
     :aria-label="`${nodeName} 三网${label}监测`"
     @click.capture="onClick"
@@ -58,8 +62,10 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
         :data-carrier-key="carrier.key"
         role="button"
         tabindex="0"
-        class="carrier-sort-row flex min-h-0 min-w-0 cursor-grab select-none flex-col gap-[2px] rounded-sm focus-visible:outline-2 focus-visible:outline-ring"
-        :class="{ 'opacity-50 cursor-grabbing': dragging === carrier.key, 'outline-2 outline-primary': dragging && target === carrier.key }"
+        class="carrier-sort-row flex min-h-0 min-w-0 cursor-grab select-none flex-col gap-[2px] rounded-md focus-visible:outline-2 focus-visible:outline-ring"
+        :class="{ 'carrier-placeholder cursor-grabbing': dragging === carrier.key }"
+        :data-drag-placeholder="dragging === carrier.key"
+        :style="{ transform: `translateY(${offsets[carrier.key] ?? 0}px)` }"
         :title="`${metric === 'latency' ? carrier.latencyTooltip : carrier.lossTooltip}\n${instruction}`"
         :aria-label="`${carrier.label} ${label}，${instruction}`"
         @pointerdown="start($event, carrier.key)"
@@ -67,29 +73,18 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
         @contextmenu.prevent
         @keydown.stop="onKeydown($event, carrier)"
       >
-        <div class="flex min-w-0 items-center justify-between gap-1 text-[10px] leading-none">
-          <span class="flex min-w-0 items-center gap-1 text-muted-foreground">
-            <span class="size-1.5 shrink-0 rounded-full" :class="carrier.dotClass" />
-            <span class="truncate">{{ carrier.label }}</span>
-          </span>
-          <span class="shrink-0 tabular-nums font-medium">{{ metric === 'latency' ? carrier.latencyDisplay : carrier.lossDisplay }}</span>
-        </div>
-        <div
-          class="grid h-1.5 min-w-0 items-end gap-[1px] opacity-80 group-hover/panel:opacity-100"
-          :style="{ gridTemplateColumns: `repeat(${(metric === 'latency' ? carrier.latencyBars : carrier.lossBars).length}, minmax(0, 1fr))` }"
-        >
-          <DataTooltip
-            v-for="bar in (metric === 'latency' ? carrier.latencyBars : carrier.lossBars)" :key="bar.key"
-            placement="top" :content="bar.tooltip" class="h-full w-full"
-          >
-            <span
-              class="block h-full w-full rounded-[1px] transition-transform duration-150 group-hover/data-tooltip:scale-y-160 group-hover/panel:opacity-60 group-hover/data-tooltip:!opacity-100"
-              :class="bar.className"
-            />
-          </DataTooltip>
-        </div>
+        <CarrierPingCardContent :carrier="carrier" :metric="metric" />
       </div>
     </div>
+    <Teleport to="body">
+      <div
+        v-if="floating && floatingCarrier" data-carrier-drag-overlay aria-hidden="true"
+        class="carrier-sort-row carrier-floating flex flex-col gap-[2px] rounded-md"
+        :class="{ 'carrier-settling': settling, 'carrier-reduce-motion': reducedMotion }" :style="floatingStyle"
+      >
+        <CarrierPingCardContent :carrier="floatingCarrier" :metric="metric" />
+      </div>
+    </Teleport>
     <span aria-live="polite" class="sr-only">{{ carriers.map(carrier => carrier.label).join('、') }}</span>
   </div>
 </template>
@@ -97,5 +92,54 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
 <style scoped>
 .carrier-sort-row {
   -webkit-touch-callout: none;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: color-mix(in srgb, var(--card) 65%, transparent);
+  padding: 1px 3px;
+}
+.carrier-dragging .carrier-sort-row {
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.carrier-placeholder {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.carrier-placeholder > :deep(*) {
+  visibility: hidden;
+}
+.carrier-floating {
+  position: fixed;
+  z-index: 150;
+  pointer-events: none;
+  background: var(--card);
+  color: var(--card-foreground);
+  transform: scale(1.035);
+  box-shadow:
+    0 8px 24px #0003,
+    0 2px 6px #0002;
+  transition: none;
+}
+.carrier-settling {
+  transform: scale(1);
+  transition:
+    left 160ms ease-out,
+    top 160ms ease-out,
+    transform 160ms ease-out;
+}
+.carrier-reduce-motion .carrier-sort-row {
+  transition: none;
+}
+.carrier-floating.carrier-reduce-motion {
+  transition: none;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .carrier-dragging .carrier-sort-row,
+  .carrier-floating {
+    transition: none;
+  }
+  .carrier-floating {
+    transform: none;
+  }
 }
 </style>

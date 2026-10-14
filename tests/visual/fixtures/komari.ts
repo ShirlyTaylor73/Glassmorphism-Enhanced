@@ -16,6 +16,7 @@ const REGION_FIXTURES = [
 ] as const
 
 export interface VisualFixtureOptions {
+  disablePageAnimation?: boolean
   managedThemeMode?: 'beijing' | 'light' | 'dark'
   preserveStorage?: boolean
   background?: { backgroundEnabled: boolean, backgroundType?: 'image' | 'video', lightBackgroundUrl?: string, darkBackgroundUrl?: string, backgroundBlur?: number, backgroundOverlay?: number }
@@ -478,7 +479,7 @@ export async function installKomariFixture(page: Page, options: VisualFixtureOpt
     colorVisionMode: options.colorVisionFriendly ? '色觉友好' : '标准',
     hideAdminEntryWhenLoggedOut: options.hideAdminEntryWhenLoggedOut,
     hidePriceWhenLoggedOut: options.hidePriceWhenLoggedOut ?? false,
-    disablePageAnimation: true,
+    disablePageAnimation: options.disablePageAnimation ?? true,
     homeQuickControlsEnabled: true,
     homeQuickControlPreset: '完整',
     homeToolsEnabled: true,
