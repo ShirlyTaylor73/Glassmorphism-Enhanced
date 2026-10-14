@@ -12,6 +12,13 @@
 
 ## 当前任务
 
+### 三网移除全部分隔线（完成，Ready for review）
+
+- 用户明确要求去掉剩余分隔线，与 CPU/内存区域风格统一。分支 fix/carrier-borderless，代码提交 9245d8e，M4。
+- 删除分隔线伪元素及其专用容器类，保留原间距、无外框状态与悬浮拖动效果；同步 README，不改数据和排序逻辑。
+- lint/type-check、完整 Playwright 145/145、production build、diff-check 通过。原视觉基线保持，手机 mini 截图已查看。纯样式删减未新增镜像测试。
+- 候选包 komari-theme-Glassmorphism-build-9245d8e.zip，版本仍为 1.1.2；CRC/顶层/manifest/preview 检查通过。未 push/release，未部署线上。
+
 ### 2026-10-14 v1.1.2 发布（已完成）
 
 - 用户授权发布三网边框简化，版本 1.1.2，目标仅 ShirlyTaylor73/Glassmorphism-Enhanced。
@@ -20,7 +27,6 @@
 - Release 已发布并标记 Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.2 。main/annotated Tag peeled SHA=63e44f6e300e50c426be7a1d8c787108a3192f37。
 - push 无自动运行；手动 Code Quality 38507698547 成功后发布。安装包 komari-theme-Glassmorphism-build-63e44f6.zip，5,927,262 bytes / 359 entries。
 - 下载与本地/GitHub digest 一致，SHA256 815f86d44441b578052fe0775c65167000c7b26f94b696a8d2b275be68b49dd6；CRC/顶层/manifest/preview 通过。交接仅推工作分支，main 保持发布 SHA。
-
 
 ### 三网边框合并（完成，Ready for review）
 
