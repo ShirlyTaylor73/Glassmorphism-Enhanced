@@ -12,6 +12,13 @@
 
 ## 当前任务
 
+### 三网边框合并（完成，Ready for review）
+
+- 用户要求去掉三网行外框、合并相邻边框。M4，分支 fix/carrier-separators，代码提交 0dee874。
+- 去掉每行边框/独立背景/圆角，只在固定行间隙画两条共享分隔线；行内 padding 补偿原 border 保持内容坐标。保留浮层与阴影、占位背景、让位动画和原数据/排序逻辑。
+- 完整 Playwright 145/145、lint/type-check/build/diff-check 通过，未修改视觉基线。查看浅色 mini 与深色拖动截图，外框消失、分隔清晰。
+- 生产候选包 komari-theme-Glassmorphism-build-0dee874.zip，版本仍为 1.1.1；ZIP CRC/顶层/manifest/preview 校验通过。未推送发布，未安装线上。
+
 ### 2026-10-14 v1.1.1 发布（已完成）
 
 - 用户授权发布卡片拖动效果修正，版本 1.1.1，唯一目标 ShirlyTaylor73/Glassmorphism-Enhanced。
@@ -20,7 +27,6 @@
 - Release 已发布并确认为 Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.1.1 。main/annotated Tag peeled SHA=ca516527806b2f0960761cb25a0b86d9ff1fd91c。
 - push 无自动运行，手动 Code Quality 38504082790 成功后发布。附件 komari-theme-Glassmorphism-build-ca51652.zip，5,927,251 bytes / 359 entries。
 - 下载附件与本地/GitHub digest 一致，SHA256 4da5f0386b34ee8e2735f1c4e534c93a695e52b16f2afe3cac23479a350726e1；CRC/顶层/manifest/preview 通过。交接仅推工作分支，不再推进同版本 main。
-
 
 ### 三网小卡片拖动效果修正（完成，Ready for review）
 
