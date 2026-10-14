@@ -1,6 +1,12 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.2.0（2026-10-14）
+## 当前发布：v1.2.1（2026-10-14）
+
+已发布且为 Latest：[v1.2.1](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.1)，main/Tag=`1f37cab`。内容为三网悬停/聚焦边框和浅色光轨可见度优化。
+
+Push未自动触发，[手动Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38553836622)成功后发布。完整回归162/162、专项1/1；正式附件下载与本地/GitHub digest一致，6,024,363 bytes，SHA256 `7a8ee8b18cdfed5ad8941ce0596124cb7d599f2bafb5194b03721f99dfc7a313`。CRC/结构/manifest/preview通过，未覆盖历史版本、未安装线上。说明见 [发布说明](release-notes-v1.2.1.md)。
+
+## 历史发布：v1.2.0（2026-10-14）
 
 已发布并标记 Latest：[v1.2.0](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.0)，main/annotated Tag 为 `8a97d21`。包含 GlassOps 双地球视觉、节点动态光轨与三网无分隔线；用户授权向自己的仓库推送发布。
 

@@ -12,10 +12,14 @@
 
 ## 当前任务
 
-### v1.2.1 发布（进行中）
+### v1.2.1 发布（已完成）
 
 - 用户授权发布悬停边框和浅色光轨，版本1.2.1，仅向ShirlyTaylor73/Glassmorphism-Enhanced写入。
 - 沿用完整回归162/162及专项1/1；发布阶段检查lint/type-check/build/ZIP和实际Actions，不覆盖历史版本、不部署线上。
+- 正式Release已发布且为Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.1 ，main/annotated Tag peeled SHA=1f37cab3df201b7aa260b7d4494ba931a9527214。
+- push无自动运行，手动Code Quality 38553836622成功后发布。附件komari-theme-Glassmorphism-build-1f37cab.zip，6,024,363 bytes / 361 entries。
+- 下载与本地/GitHub digest一致：SHA256 7a8ee8b18cdfed5ad8941ce0596124cb7d599f2bafb5194b03721f99dfc7a313。CRC/顶层/manifest/preview通过；交接仅推工作分支，未部署生产。
+
 
 ### 三网悬停边框与浅色光轨（完成，Ready for review）
 
