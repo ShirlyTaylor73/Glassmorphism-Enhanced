@@ -158,3 +158,27 @@ test.describe('touch carrier sorting', () => {
     await expect(page.getByRole('dialog')).toBeVisible()
   })
 })
+
+
+test('floating carrier card follows pointer and neighbors make room before commit', async ({ page }) => {
+  await open(page)
+  const row = page.locator('[data-carrier-ping="mobile-latency"]').first()
+  const neighbor = page.locator('[data-carrier-ping="unicom-latency"]').first()
+  await row.scrollIntoViewIfNeeded()
+  const a = (await row.boundingBox())!
+  const b = (await neighbor.boundingBox())!
+  await page.mouse.move(a.x + 20, a.y + a.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(b.x + 30, b.y + b.height / 2, { steps: 8 })
+  const floating = page.locator('[data-carrier-drag-overlay]')
+  await expect(floating).toBeVisible()
+  await expect(floating).toContainText('移动')
+  await expect(row).toHaveAttribute('data-drag-placeholder', 'true')
+  await expect.poll(async () => (await neighbor.boundingBox())!.y).toBeGreaterThan(b.y + 5)
+  await allOrders(page, DEFAULT)
+  await page.screenshot({ path: 'test-results/carrier-drag-active.png' })
+  await page.keyboard.press('Escape')
+  await page.mouse.up()
+  await expect(floating).toHaveCount(0)
+  await allOrders(page, DEFAULT)
+})

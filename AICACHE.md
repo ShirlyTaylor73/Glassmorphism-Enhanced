@@ -910,3 +910,7 @@
 - 普通阈值下 7 张截图中仅两张深色背景超限；为审核浅色也使用临时严格阈值生成全部实际图，未修改正式阈值。
 - 旧 snapshots 有更早版本的卡片/图标/金额漂移。用只读 Vite loader 加载 1cfbbad 的 Header/Background/store 创建参考构建，与本轮源码逐张对比 7 张图，确认卡片、三网和数据一致，本轮差异限背景/目标按钮。
 - 审核图位于本地 test-results/background-review/source-review-0..6.jpg；移动手动状态截图确认“恢复自动”可见且标题截断不溢出。将已审核的七张实际截图写入基线，不放宽阈值。
+
+## 三网小卡片拖动效果修正（进行中）
+
+用户确认实施，分支 fix/carrier-drag-cards，规格 docs/carrier-drag-cards_spec.md；M4，不发布。
