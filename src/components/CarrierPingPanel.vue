@@ -54,7 +54,7 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
       <span class="text-muted-foreground">{{ label }}</span>
       <span class="text-[10px] text-muted-foreground/70">{{ isTransit ? (app.lang === 'zh-CN' ? '中转估算' : 'Transit estimate') : '三网' }}</span>
     </button>
-    <div class="grid min-h-0 flex-1 grid-rows-3 gap-1">
+    <div class="carrier-sort-list grid min-h-0 flex-1 grid-rows-3 gap-1">
       <div
         v-for="carrier in carriers"
         :key="carrier.key"
@@ -62,7 +62,7 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
         :data-carrier-key="carrier.key"
         role="button"
         tabindex="0"
-        class="carrier-sort-row flex min-h-0 min-w-0 cursor-grab select-none flex-col gap-[2px] rounded-md focus-visible:outline-2 focus-visible:outline-ring"
+        class="carrier-sort-row flex min-h-0 min-w-0 cursor-grab select-none flex-col gap-[2px] focus-visible:outline-2 focus-visible:outline-ring"
         :class="{ 'carrier-placeholder cursor-grabbing': dragging === carrier.key }"
         :data-drag-placeholder="dragging === carrier.key"
         :style="{ transform: `translateY(${offsets[carrier.key] ?? 0}px)` }"
@@ -92,16 +92,32 @@ function onKeydown(event: KeyboardEvent, carrier: CarrierPingDisplay): void {
 <style scoped>
 .carrier-sort-row {
   -webkit-touch-callout: none;
-  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
-  background: color-mix(in srgb, var(--card) 65%, transparent);
-  padding: 1px 3px;
+  padding: 2px 4px;
+}
+.carrier-sort-list {
+  position: relative;
+}
+.carrier-sort-list::before,
+.carrier-sort-list::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  pointer-events: none;
+}
+/* Two shared separators sit in the 4px gaps and stay put while rows move. */
+.carrier-sort-list::before {
+  top: calc((100% - 2px) / 3);
+}
+.carrier-sort-list::after {
+  bottom: calc((100% - 2px) / 3);
 }
 .carrier-dragging .carrier-sort-row {
   transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .carrier-placeholder {
-  border-style: dashed;
-  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
   background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 .carrier-placeholder > :deep(*) {
