@@ -100,3 +100,42 @@ test('missing earth texture degrades without blocking home', async ({ page }) =>
   await expect(page.getByRole('status').filter({ hasText: '地球暂不可用' })).toBeVisible()
   await expect(page.getByRole('button', { name: '查看节点 主控-洛杉矶 详情', exact: true })).toBeVisible()
 })
+
+test('100 nodes switch renderers and modes without duplicate canvases; hidden page pauses', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-07-25T12:00:00Z') })
+  await installKomariFixture(page, { preserveStorage: true, earthRenderer: 'cobe', nodeCount: 100, earthArcMode: 'persistent', disablePageAnimation: false })
+  await page.goto('/')
+  const earth = page.locator('[data-earth-arc-count]')
+  await expect(earth.locator('canvas')).toHaveCount(1)
+  for (const renderer of ['realistic', 'cobe', 'realistic']) {
+    await page.evaluate((value) => {
+      const app = (document.querySelector('#app') as any).__vue_app__.config.globalProperties.$pinia._s.get('app')
+      app.publicSettings.theme_settings.earthRenderer = value
+    }, renderer)
+    await expect(page.locator(`.${renderer}-earth-shell`)).toBeVisible()
+    await expect(earth.locator('canvas')).toHaveCount(1)
+    await expect.poll(async () => Number(await earth.locator('[data-earth-trails]').getAttribute('data-active-flights'))).toBeGreaterThan(0)
+    await page.evaluate(() => {
+      const app = (document.querySelector('#app') as any).__vue_app__.config.globalProperties.$pinia._s.get('app')
+      app.publicSettings.theme_settings.earthArcMode = 'off'
+    })
+    await expect(earth.locator('[data-earth-flight]')).toHaveCount(0)
+    await page.evaluate(() => {
+      const app = (document.querySelector('#app') as any).__vue_app__.config.globalProperties.$pinia._s.get('app')
+      app.publicSettings.theme_settings.earthArcMode = 'auto'
+    })
+    await expect.poll(async () => Number(await earth.locator('[data-earth-trails]').getAttribute('data-active-flights'))).toBeGreaterThan(0)
+  }
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' })
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  await expect(earth).toHaveAttribute('data-earth-active', 'false')
+  await expect(earth.locator('[data-earth-trails]')).toHaveAttribute('data-active-flights', '0')
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' })
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  await expect(earth).toHaveAttribute('data-earth-active', 'true')
+  await expect.poll(async () => Number(await earth.locator('[data-earth-trails]').getAttribute('data-active-flights'))).toBeGreaterThan(0)
+})

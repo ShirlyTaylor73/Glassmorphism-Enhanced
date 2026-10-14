@@ -2,7 +2,7 @@
 
 Glassmorphism Enhanced 是一个面向 [Komari Monitor](https://github.com/komari-monitor/komari) 的独立维护主题：用毛玻璃界面、三网质量指标、响应式 NodeCard 和可选的 Transit Carrier Ping，帮助你快速判断节点状态与入口路径。
 
-[![Release](https://img.shields.io/badge/Release-v1.1.2-10b981)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/Release-v1.2.0-10b981)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 [下载 Releases](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases) · [安装](#installation) · [Transit Carrier Ping](#transit-carrier-ping) · [开发](#development)
@@ -10,6 +10,12 @@ Glassmorphism Enhanced 是一个面向 [Komari Monitor](https://github.com/komar
 ## Preview
 
 ![Glassmorphism Enhanced preview](docs/preview.png)
+
+## 地球视觉与连线
+
+贴图和点阵地球采用 GlassOps 视觉，保留当前首页位置与尺寸。贴图含实时昼夜、城市灯光和大气层，点阵含经纬网、环形轨道与星芒。光轨绑定节点两端：`auto` 分批轮播，`persistent` 固定路径错峰循环，`upstream` 从上游向下游播放，`off` 关闭节点光轨但保留装饰。平铺地图保持原有样式。
+
+“停止地球旋转”只停止自转；主题关闭动画或系统减少动态效果时，停止自转、光轨和闪烁。自动连接仅作视觉展示，不代表实时网络流量。
 
 ## Features
 

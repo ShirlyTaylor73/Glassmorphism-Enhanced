@@ -2,6 +2,13 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.2.0 — 2026-10-14
+
+- 迁移 GlassOps 双地球视觉：贴图实时昼夜、城市灯光、大气层；点阵经纬网、环形轨道和星芒，保持原首页位置与尺寸。
+- 新增节点间渐变光轨、明亮光头与拖尾，保留 auto/persistent/upstream/off 配置；persistent 改为固定路径循环，upstream 从上游向下游播放。
+- 保留停止自转、减少动画与可见性暂停，新增纹理失败降级及真实 WebGL/光轨测试；平铺地图不变。
+- 去掉三网剩余分隔线，与 CPU/内存区域统一；拖动排序效果保留。
+
 ## 1.1.2 — 2026-10-14
 
 - 去掉三网每行的外框、独立背景和圆角，仅保留行间两条共享分隔线，避免相邻边框重复。
