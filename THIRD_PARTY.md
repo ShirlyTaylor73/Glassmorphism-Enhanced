@@ -54,3 +54,12 @@ All three reviewed projects use the MIT License. The licenses permit use, modifi
 - MIT，Copyright (c) 2025 Tony Liu (tonyliuzj, tony-liu.com)。仅移植展示，保留本主题月流量计算及三网/中转来源，不复制其长卡片业务链。
 
 - 顶部统计卡片的浅色渐变、内高光与柔和阴影同样参考其 general-metric-card 样式，底色和边框继续使用本主题共享配色变量。
+
+## GlassOps 双地球视觉
+
+- 来源：本地 komari-glassops c5ba36a，两种地球渲染组件及 earthMeteor 光轨配色。MIT，Copyright (c) 2025 Tony Liu (tonyliuzj, tony-liu.com)，原 LICENSE 保留。
+- 迁移昼夜灯光/大气层与点阵装饰，节点连线使用本主题球面路径与拓扑，不复制首页排版和后台。
+- earth-blue-marble.jpg SHA256 `228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01`（与现有文件一致）。
+- earth-night.jpg SHA256 `d87de751a264e4f8ff69c68de5dab9606daee87a6f15ae743c93200743bd7ec1`（本轮替换为参考快照）。
+- earth-topology.png SHA256 `839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12`（与现有文件一致）。
+- earth-water.png SHA256 `3a8132db56aac4e64e7fcbf2928ee970c075ac6a96b38798d0bb8be82836a4d3`（与现有文件一致）。

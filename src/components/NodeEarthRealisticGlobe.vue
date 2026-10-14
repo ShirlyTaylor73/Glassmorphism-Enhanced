@@ -1,16 +1,29 @@
 <script setup lang="ts">
 import type { GlobeInstance } from 'globe.gl'
-import type { MeshPhongMaterial, Texture } from 'three'
+import type {
+  AmbientLight,
+  DirectionalLight,
+  HemisphereLight,
+  MeshPhongMaterial,
+  PerspectiveCamera,
+  ShaderMaterial,
+  Sprite,
+  SpriteMaterial,
+  Texture,
+  Vector3,
+} from 'three'
 import type { NodeData } from '@/stores/nodes'
+import type { Vec3 as TrailVec3 } from '@/utils/earthTrails'
 import {
-  useDocumentVisibility,
   useElementSize,
-  useElementVisibility,
 } from '@vueuse/core'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import EarthLightTrails from '@/components/EarthLightTrails.vue'
+import { useEarthMotion } from '@/composables/useEarthMotion'
 import { useNodeGeoClusters } from '@/composables/useNodeGeoClusters'
 import { useAppStore } from '@/stores/app'
 import { buildEarthArcs } from '@/utils/earthArcs'
+import { isOccludedBySphere } from '@/utils/earthTrails'
 
 const props = defineProps<{
   nodes?: NodeData[]
@@ -21,6 +34,185 @@ const EARTH_NIGHT_TEXTURE = '/images/earth/earth-night.jpg'
 const EARTH_BUMP_MAP = '/images/earth/earth-topology.png'
 const EARTH_SPECULAR_MAP = '/images/earth/earth-water.png'
 const CHINA_COORD: [number, number] = [35.8617, 104.1954]
+const GLOBE_ALTITUDE = 1.95
+const EARTH_NIGHT_TEXTURE_SIZE = [3600, 1800] as const
+const SOLAR_REFRESH_MS = 60_000
+
+const DAY_NIGHT_SHADER_UNIFORMS = `
+uniform sampler2D nightTexture;
+uniform vec3 sunDirectionView;
+uniform float cityLightStrength;
+uniform float nightBaseStrength;
+uniform float nightGeographyStrength;
+uniform float daySurfaceStrength;
+uniform float dayAmbientStrength;
+uniform float dayWarmCompression;
+uniform float nightAmbientStrength;
+uniform float terminatorWidth;
+uniform float twinkleTime;
+uniform float twinkleStrength;
+`
+
+const DAY_NIGHT_MAP_FRAGMENT = `
+#ifdef USE_MAP
+
+  vec4 sampledDayColor = texture2D(map, vMapUv);
+  vec3 sampledNightColor = texture2D(nightTexture, vMapUv).rgb;
+  vec2 nightTexel = vec2(${(1 / EARTH_NIGHT_TEXTURE_SIZE[0]).toFixed(9)}, ${(1 / EARTH_NIGHT_TEXTURE_SIZE[1]).toFixed(9)});
+  vec3 nearbyNightLight = sampledNightColor;
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv + vec2(nightTexel.x, 0.0)).rgb * 0.94);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv - vec2(nightTexel.x, 0.0)).rgb * 0.94);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv + vec2(0.0, nightTexel.y)).rgb * 0.94);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv - vec2(0.0, nightTexel.y)).rgb * 0.94);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv + nightTexel).rgb * 0.90);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv - nightTexel).rgb * 0.90);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv + vec2(nightTexel.x, -nightTexel.y)).rgb * 0.90);
+  nearbyNightLight = max(nearbyNightLight, texture2D(nightTexture, vMapUv + vec2(-nightTexel.x, nightTexel.y)).rgb * 0.90);
+
+  float solarIntensity = dot(normalize(vNormal), normalize(sunDirectionView));
+  float daylight = smoothstep(-terminatorWidth, terminatorWidth * 1.18, solarIntensity);
+  float nightVisibility = 1.0 - smoothstep(-0.08, 0.16, solarIntensity);
+  float settlementSignal = max(
+    0.0,
+    max(nearbyNightLight.r, nearbyNightLight.g * 0.96) - nearbyNightLight.b * 0.50
+  );
+  float citySignal = max(
+    0.0,
+    max(sampledNightColor.r, sampledNightColor.g * 0.96) - sampledNightColor.b * 0.50
+  );
+  float cityMask = pow(smoothstep(0.010, 0.20, citySignal), 0.88);
+  float settlementMask = pow(smoothstep(0.0007, 0.050, settlementSignal), 0.56);
+  vec2 settlementGrid = vMapUv * vec2(1440.0, 720.0);
+  vec2 settlementCell = floor(settlementGrid);
+  vec2 settlementOffset = fract(settlementGrid) - 0.5;
+  float cityNoise = fract(sin(dot(settlementCell, vec2(12.9898, 78.233))) * 43758.5453);
+  float sparkleThreshold = mix(0.88, 0.22, settlementMask);
+  float pointDistance = length(settlementOffset);
+  float pointCore = 1.0 - smoothstep(0.10, 0.42, pointDistance);
+  float pointHalo = 1.0 - smoothstep(0.18, 0.60, pointDistance);
+  float pointShape = min(1.0, pointCore + pointHalo * 0.26);
+  float settlementSparkle = smoothstep(
+    sparkleThreshold,
+    min(0.995, sparkleThreshold + 0.10),
+    cityNoise
+  ) * pointShape * settlementMask;
+  vec2 metroGrid = vMapUv * vec2(1920.0, 960.0);
+  vec2 metroCell = floor(metroGrid);
+  vec2 metroOffset = fract(metroGrid) - 0.5;
+  float metroNoise = fract(sin(dot(metroCell, vec2(39.3468, 11.1351))) * 24634.6345);
+  float metroThreshold = mix(0.995, 0.54, pow(settlementMask, 1.60));
+  float metroPoint = 1.0 - smoothstep(0.08, 0.34, length(metroOffset));
+  float metroSparkle = smoothstep(
+    metroThreshold,
+    min(0.999, metroThreshold + 0.055),
+    metroNoise
+  ) * metroPoint * pow(settlementMask, 1.35);
+  settlementSparkle = max(settlementSparkle, metroSparkle * 0.82);
+  float settlementBrightness = mix(0.24, 0.60, pow(settlementMask, 1.72));
+  float twinkleCandidate = smoothstep(0.58, 0.92, cityNoise);
+  float twinkle = 1.0 + sin(twinkleTime * mix(1.4, 2.6, cityNoise) + cityNoise * 6.28318)
+    * twinkleCandidate * twinkleStrength;
+  vec3 cityColor = mix(
+    sampledNightColor * 1.35,
+    vec3(1.0, 0.74, 0.40),
+    0.30
+  );
+  float terrainLuminance = dot(sampledDayColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+  vec3 moonlitGeography = sampledDayColor.rgb
+    * vec3(0.27, 0.34, 0.46)
+    * nightGeographyStrength;
+  moonlitGeography += terrainLuminance
+    * vec3(0.020, 0.034, 0.060)
+    * nightGeographyStrength;
+  vec3 nightSurface = moonlitGeography
+    + sampledNightColor * nightBaseStrength
+    + vec3(0.008, 0.016, 0.032);
+  float warmHighlight = smoothstep(
+    0.10,
+    0.38,
+    max(0.0, (sampledDayColor.r + sampledDayColor.g) * 0.5 - sampledDayColor.b)
+  ) * smoothstep(0.36, 0.72, terrainLuminance);
+  float warmCompression = warmHighlight * dayWarmCompression;
+  vec3 balancedDayColor = mix(
+    sampledDayColor.rgb,
+    vec3(terrainLuminance),
+    warmCompression * 0.36
+  ) * (1.0 - warmCompression * 0.18);
+  float dayLightLift = mix(0.98, 1.18, clamp(solarIntensity, 0.0, 1.0));
+  vec3 daySurface = balancedDayColor * daySurfaceStrength * dayLightLift;
+
+  diffuseColor *= vec4(mix(nightSurface, daySurface, daylight), sampledDayColor.a);
+  totalEmissiveRadiance += balancedDayColor * daylight * dayAmbientStrength;
+  totalEmissiveRadiance += moonlitGeography * nightVisibility * nightAmbientStrength;
+  totalEmissiveRadiance += cityColor
+    * cityMask
+    * nightVisibility
+    * cityLightStrength
+    * 0.08
+    * twinkle;
+  totalEmissiveRadiance += vec3(1.0, 0.74, 0.34)
+    * settlementSparkle
+    * nightVisibility
+    * cityLightStrength
+    * settlementBrightness
+    * twinkle;
+
+#endif
+`
+
+const ATMOSPHERE_VERTEX_SHADER = `
+varying vec2 vAtmosphereUv;
+
+void main() {
+  vAtmosphereUv = uv;
+  vec4 viewPosition = modelViewMatrix[3];
+  vec2 spriteScale = vec2(
+    length(modelMatrix[0].xyz),
+    length(modelMatrix[1].xyz)
+  );
+  viewPosition.xy += position.xy * spriteScale;
+  gl_Position = projectionMatrix * viewPosition;
+}
+`
+
+const ATMOSPHERE_FRAGMENT_SHADER = `
+uniform vec3 dayAtmosphereColor;
+uniform vec3 nightAtmosphereColor;
+uniform vec3 sunDirectionView;
+uniform float atmosphereIntensity;
+varying vec2 vAtmosphereUv;
+
+void main() {
+  const float earthRadius = 0.917431;
+  vec2 position = (vAtmosphereUv - 0.5) * 2.0;
+  float radius = length(position);
+  if (radius >= 1.0)
+    discard;
+
+  float normalizedAltitude = clamp(
+    (radius - earthRadius) / (1.0 - earthRadius),
+    0.0,
+    1.0
+  );
+  float outerFade = 1.0 - smoothstep(0.0, 1.0, normalizedAltitude);
+  float surfaceContact = smoothstep(earthRadius - 0.006, earthRadius + 0.010, radius);
+  float projectedRadius = min(radius / earthRadius, 1.0);
+  vec3 limbNormal = normalize(vec3(
+    position / earthRadius,
+    sqrt(max(0.0, 1.0 - projectedRadius * projectedRadius))
+  ));
+  float limbSolarIntensity = dot(limbNormal, normalize(sunDirectionView));
+  float sunlight = smoothstep(-0.26, 0.42, limbSolarIntensity);
+  float twilight = 1.0 - smoothstep(0.0, 0.34, abs(limbSolarIntensity));
+  vec3 atmosphereColor = mix(nightAtmosphereColor, dayAtmosphereColor, sunlight);
+  float directionalStrength = mix(0.62, 1.0, sunlight) + twilight * 0.10;
+  float alpha = surfaceContact
+    * pow(outerFade, 1.7)
+    * atmosphereIntensity
+    * directionalStrength;
+  gl_FragColor = vec4(atmosphereColor, alpha);
+}
+`
 
 const appStore = useAppStore()
 
@@ -28,15 +220,46 @@ const containerRef = ref<HTMLDivElement>()
 const globeHostRef = ref<HTMLDivElement>()
 const { width: containerWidth, height: containerHeight } = useElementSize(containerRef)
 
-const documentVisibility = useDocumentVisibility()
-const elementVisible = useElementVisibility(containerRef)
-const shouldRender = computed(() => documentVisibility.value === 'visible' && elementVisible.value)
+const { shouldRender, reducedMotion } = useEarthMotion(containerRef)
+const trailsRef = ref<InstanceType<typeof EarthLightTrails>>()
+const renderFailed = ref(false)
 
 let globe: GlobeInstance | null = null
 let globeMaterial: MeshPhongMaterial | null = null
 let waterSpecularMap: Texture | null = null
+let nightTexture: Texture | null = null
+let ambientLight: AmbientLight | null = null
+let hemisphereLight: HemisphereLight | null = null
+let keyLight: DirectionalLight | null = null
+let fillLight: DirectionalLight | null = null
+let rimLight: DirectionalLight | null = null
+let atmosphereMaterial: ShaderMaterial | null = null
+let atmosphereMesh: Sprite | null = null
+let sunDirectionWorld: Vector3 | null = null
+let sunDirectionView: Vector3 | null = null
+let lastSolarUpdate = 0
+let threeRuntime: typeof import('three') | null = null
 let loadingGlobe = false
 let destroyed = false
+let globeReady = false
+const labelElements = new Map<string, HTMLElement>()
+
+interface SurfaceShaderUniforms {
+  nightTexture: { value: Texture }
+  sunDirectionView: { value: Vector3 }
+  cityLightStrength: { value: number }
+  nightBaseStrength: { value: number }
+  nightGeographyStrength: { value: number }
+  daySurfaceStrength: { value: number }
+  dayAmbientStrength: { value: number }
+  dayWarmCompression: { value: number }
+  nightAmbientStrength: { value: number }
+  terminatorWidth: { value: number }
+  twinkleTime: { value: number }
+  twinkleStrength: { value: number }
+}
+
+let surfaceShaderUniforms: SurfaceShaderUniforms | null = null
 
 interface GlobePoint {
   id: string
@@ -54,39 +277,16 @@ interface GlobeLabel {
   code: string
 }
 
-interface GlobeArc {
-  id: string
-  startLat: number
-  startLng: number
-  endLat: number
-  endLng: number
-}
-
 const {
   displayNodes,
-  regionClusters,
   locationByNodeUuid,
+  regionClusters,
   totalServers,
   onlineServers,
   offlineServers,
   clusterKey,
 } = useNodeGeoClusters({ nodes: () => props.nodes })
-
-const earthArcs = computed(() => buildEarthArcs(
-  appStore.earthArcMode,
-  regionClusters.value,
-  displayNodes.value,
-  locationByNodeUuid.value,
-))
-const persistentEarthArcs = computed(() => appStore.earthArcMode === 'persistent')
-
-const arcsData = computed<GlobeArc[]>(() => earthArcs.value.map(arc => ({
-  id: arc.id,
-  startLat: arc.from[0],
-  startLng: arc.from[1],
-  endLat: arc.to[0],
-  endLng: arc.to[1],
-})))
+const earthArcs = computed(() => buildEarthArcs(appStore.earthArcMode, regionClusters.value, displayNodes.value, locationByNodeUuid.value))
 
 const pointsData = computed<GlobePoint[]>(() => regionClusters.value.map(cluster => ({
   id: cluster.id,
@@ -104,8 +304,40 @@ const labelsData = computed<GlobeLabel[]>(() => regionClusters.value.map(cluster
   code: cluster.code,
 })))
 
-function earthTextureUrl() {
-  return appStore.isDark ? EARTH_NIGHT_TEXTURE : EARTH_DAY_TEXTURE
+function normalizeDegrees(value: number): number {
+  return ((value % 360) + 360) % 360
+}
+
+function normalizeLongitude(value: number): number {
+  return normalizeDegrees(value + 180) - 180
+}
+
+function getSubsolarPoint(date = new Date()): { lat: number, lng: number } {
+  const julianDay = date.getTime() / 86_400_000 + 2_440_587.5
+  const daysSinceJ2000 = julianDay - 2_451_545
+  const meanLongitude = normalizeDegrees(280.46 + 0.9856474 * daysSinceJ2000)
+  const meanAnomaly = normalizeDegrees(357.528 + 0.9856003 * daysSinceJ2000) * Math.PI / 180
+  const eclipticLongitude = (
+    meanLongitude
+    + 1.915 * Math.sin(meanAnomaly)
+    + 0.02 * Math.sin(2 * meanAnomaly)
+  ) * Math.PI / 180
+  const obliquity = (23.439 - 0.0000004 * daysSinceJ2000) * Math.PI / 180
+  const rightAscension = Math.atan2(
+    Math.cos(obliquity) * Math.sin(eclipticLongitude),
+    Math.cos(eclipticLongitude),
+  ) * 180 / Math.PI
+  const declination = Math.asin(
+    Math.sin(obliquity) * Math.sin(eclipticLongitude),
+  ) * 180 / Math.PI
+  const greenwichSiderealTime = normalizeDegrees(
+    280.46061837 + 360.98564736629 * daysSinceJ2000,
+  )
+
+  return {
+    lat: declination,
+    lng: normalizeLongitude(rightAscension - greenwichSiderealTime),
+  }
 }
 
 function pointColor(point: object): string {
@@ -120,6 +352,7 @@ function createLabelElement(data: object): HTMLElement {
   const root = document.createElement('div')
   root.className = 'earth-label'
   root.dataset.clusterId = label.id
+  labelElements.set(label.id, root)
 
   const flag = document.createElement('img')
   flag.className = 'earth-label-flag'
@@ -136,22 +369,76 @@ function getRenderSize() {
   return { width, height }
 }
 
+function projectTrailPoint(point: TrailVec3) {
+  if (!globe || !threeRuntime || !globeReady)
+    return { x: 0, y: 0, visible: false }
+  const radius = globe.getGlobeRadius()
+  const camera = globe.camera()
+  const position = camera.position
+  const visible = !isOccludedBySphere(point, [position.x / radius, position.y / radius, position.z / radius])
+  const projected = new threeRuntime.Vector3(...point).multiplyScalar(radius).project(camera)
+  const { width, height } = getRenderSize()
+  return { x: (projected.x + 1) * width / 2, y: (1 - projected.y) * height / 2, visible: visible && projected.z < 1 }
+}
+
 function resizeGlobe() {
   if (!globe)
     return
   const { width, height } = getRenderSize()
   globe.width(width).height(height)
+  if (threeRuntime) {
+    const size = new threeRuntime.Vector2(width, height)
+    globe.rendererSize(size)
+  }
+  syncAtmosphereGeometry()
+}
+
+function syncAtmosphereGeometry() {
+  if (!globe || !containerRef.value)
+    return
+
+  const camera = globe.camera() as PerspectiveCamera
+  const { height } = getRenderSize()
+  const globeRadius = globe.getGlobeRadius()
+  const cameraDistance = camera.position.length()
+  const silhouetteDistance = Math.sqrt(Math.max(
+    cameraDistance * cameraDistance - globeRadius * globeRadius,
+    1,
+  ))
+  const focalLength = (height / 2) / Math.tan(camera.fov * Math.PI / 360)
+  const visibleRadius = focalLength * globeRadius / silhouetteDistance * 1.06
+  const haloWidth = Math.min(64, Math.max(12, visibleRadius * 0.20))
+  const shell = containerRef.value
+  shell.style.setProperty('--earth-visible-radius', `${visibleRadius.toFixed(2)}px`)
+  shell.style.setProperty('--earth-halo-inner-radius', `${Math.max(0, visibleRadius - 10).toFixed(2)}px`)
+  shell.style.setProperty('--earth-halo-contact-radius', `${(visibleRadius + 1).toFixed(2)}px`)
+  shell.style.setProperty('--earth-halo-shoulder-radius', `${(visibleRadius + haloWidth * 0.28).toFixed(2)}px`)
+  shell.style.setProperty('--earth-halo-fade-radius', `${(visibleRadius + haloWidth * 0.64).toFixed(2)}px`)
+  shell.style.setProperty('--earth-halo-outer-radius', `${(visibleRadius + haloWidth).toFixed(2)}px`)
+  shell.style.setProperty('--earth-halo-diameter', `${((visibleRadius + haloWidth) * 2).toFixed(2)}px`)
+  globeHostRef.value?.setAttribute('data-visible-earth-radius', visibleRadius.toFixed(2))
+  globeHostRef.value?.setAttribute('data-atmosphere-halo-width', haloWidth.toFixed(2))
+}
+
+function isContainerInViewport(): boolean {
+  if (!containerRef.value || typeof window === 'undefined')
+    return true
+  const rect = containerRef.value.getBoundingClientRect()
+  return rect.bottom > 0
+    && rect.right > 0
+    && rect.top < window.innerHeight
+    && rect.left < window.innerWidth
 }
 
 function resetPointOfView(transitionMs = 0) {
-  globe?.pointOfView({ lat: CHINA_COORD[0], lng: CHINA_COORD[1], altitude: 1.95 }, transitionMs)
+  globe?.pointOfView({ lat: CHINA_COORD[0], lng: CHINA_COORD[1], altitude: GLOBE_ALTITUDE }, transitionMs)
 }
 
 function applyControls() {
   if (!globe)
     return
   const controls = globe.controls()
-  controls.autoRotate = shouldRender.value && !appStore.stopEarth
+  controls.autoRotate = shouldRender.value && !appStore.stopEarth && !reducedMotion.value
   controls.autoRotateSpeed = 1.6
   controls.enableDamping = true
   controls.enableZoom = false
@@ -159,21 +446,193 @@ function applyControls() {
   controls.rotateSpeed = 0.55
 }
 
+function syncSolarLighting(date = new Date()) {
+  if (!globe || !threeRuntime || !sunDirectionWorld || !sunDirectionView)
+    return
+
+  const subsolar = getSubsolarPoint(date)
+  const worldCoords = globe.getCoords(subsolar.lat, subsolar.lng, 1)
+  sunDirectionWorld.set(worldCoords.x, worldCoords.y, worldCoords.z).normalize()
+
+  const camera = globe.camera()
+  camera.updateMatrixWorld(true)
+  sunDirectionView.copy(sunDirectionWorld).transformDirection(camera.matrixWorldInverse)
+  surfaceShaderUniforms?.sunDirectionView.value.copy(sunDirectionView)
+  const atmosphereSun = atmosphereMaterial?.uniforms.sunDirectionView?.value as Vector3 | undefined
+  atmosphereSun?.copy(sunDirectionView)
+
+  if (keyLight)
+    keyLight.position.copy(sunDirectionWorld).multiplyScalar(globe.getGlobeRadius() * 2.8)
+
+  const projectedSunAngle = Math.atan2(sunDirectionView.x, sunDirectionView.y) * 180 / Math.PI
+  const visibleDayWeight = (sunDirectionView.z + 1) / 2
+  const shell = containerRef.value
+  shell?.style.setProperty('--earth-atmosphere-angle', `${projectedSunAngle.toFixed(2)}deg`)
+  shell?.style.setProperty(
+    '--earth-atmosphere-day',
+    `rgb(147 218 255 / ${(0.30 + visibleDayWeight * 0.12).toFixed(3)})`,
+  )
+  shell?.style.setProperty(
+    '--earth-atmosphere-night',
+    `rgb(96 165 250 / ${(0.26 + (1 - visibleDayWeight) * 0.10).toFixed(3)})`,
+  )
+  syncAtmosphereGeometry()
+
+  globeHostRef.value?.setAttribute('data-subsolar-lat', subsolar.lat.toFixed(4))
+  globeHostRef.value?.setAttribute('data-subsolar-lng', subsolar.lng.toFixed(4))
+  globeHostRef.value?.setAttribute(
+    'data-sun-view',
+    [sunDirectionView.x, sunDirectionView.y, sunDirectionView.z].map(value => value.toFixed(4)).join(','),
+  )
+}
+
+function syncTwinkleAnimation() {
+  if (!shouldRender.value || reducedMotion.value) {
+    if (surfaceShaderUniforms)
+      surfaceShaderUniforms.twinkleTime.value = 0
+    globeHostRef.value?.setAttribute('data-city-twinkle', 'static')
+    return
+  }
+  globeHostRef.value?.setAttribute('data-city-twinkle', 'animated')
+}
+
+function configureSurfaceShader() {
+  if (!globeMaterial || !nightTexture || !sunDirectionView)
+    return
+
+  globeMaterial.onBeforeCompile = (shader) => {
+    const uniforms: SurfaceShaderUniforms = {
+      nightTexture: { value: nightTexture! },
+      sunDirectionView: { value: sunDirectionView! },
+      cityLightStrength: { value: appStore.isDark ? 1.82 : 1.24 },
+      nightBaseStrength: { value: appStore.isDark ? 0.24 : 0.25 },
+      nightGeographyStrength: { value: appStore.isDark ? 0.84 : 0.84 },
+      daySurfaceStrength: { value: appStore.isDark ? 1.34 : 1.24 },
+      dayAmbientStrength: { value: appStore.isDark ? 0.20 : 0.19 },
+      dayWarmCompression: { value: appStore.isDark ? 0 : 1 },
+      nightAmbientStrength: { value: appStore.isDark ? 0.13 : 0.14 },
+      terminatorWidth: { value: appStore.isDark ? 0.14 : 0.16 },
+      twinkleTime: { value: 0 },
+      twinkleStrength: { value: appStore.isDark ? 0.14 : 0.08 },
+    }
+    Object.assign(shader.uniforms, uniforms)
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <map_pars_fragment>', `#include <map_pars_fragment>${DAY_NIGHT_SHADER_UNIFORMS}`)
+      .replace('#include <map_fragment>', DAY_NIGHT_MAP_FRAGMENT)
+    surfaceShaderUniforms = uniforms
+  }
+  globeMaterial.customProgramCacheKey = () => 'glassops-realistic-solar-v14'
+  globeMaterial.needsUpdate = true
+}
+
+function createAtmosphereLayer() {
+  if (!globe || !threeRuntime || !sunDirectionView)
+    return
+
+  atmosphereMaterial = new threeRuntime.ShaderMaterial({
+    uniforms: {
+      dayAtmosphereColor: { value: new threeRuntime.Color(appStore.isDark ? 0x93DAFF : 0x2589D8) },
+      nightAtmosphereColor: { value: new threeRuntime.Color(appStore.isDark ? 0x60A5FA : 0x376F84) },
+      sunDirectionView: { value: sunDirectionView },
+      atmosphereIntensity: { value: appStore.isDark ? 0.58 : 0.42 },
+    },
+    vertexShader: ATMOSPHERE_VERTEX_SHADER,
+    fragmentShader: ATMOSPHERE_FRAGMENT_SHADER,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+    blending: threeRuntime.NormalBlending,
+    toneMapped: false,
+  })
+  atmosphereMesh = new threeRuntime.Sprite(atmosphereMaterial as unknown as SpriteMaterial)
+  const atmosphereDiameter = globe.getGlobeRadius() * 2.18
+  atmosphereMesh.scale.set(atmosphereDiameter, atmosphereDiameter, 1)
+  atmosphereMesh.name = 'glassops-gradient-atmosphere'
+  atmosphereMesh.renderOrder = 4
+  atmosphereMesh.frustumCulled = false
+  atmosphereMesh.onBeforeRender = () => {
+    if (shouldRender.value) {
+      trailsRef.value?.renderFrame(performance.now())
+      if (Date.now() - lastSolarUpdate >= SOLAR_REFRESH_MS) {
+        lastSolarUpdate = Date.now()
+        syncSolarLighting()
+      }
+    }
+    if (shouldRender.value && !reducedMotion.value && surfaceShaderUniforms)
+      surfaceShaderUniforms.twinkleTime.value = performance.now() / 1000
+  }
+  globe.scene().add(atmosphereMesh)
+  globeHostRef.value?.setAttribute('data-atmosphere-model', 'solar-dual-tone-gradient')
+  globeHostRef.value?.setAttribute('data-atmosphere-transmission', 'meteor-visible')
+}
+
 function applyMaterialStyle() {
   if (!globe || !globeMaterial)
     return
-  globe.globeImageUrl(earthTextureUrl())
-  globeMaterial.bumpScale = appStore.isDark ? 0.02 : 0.03
-  globeMaterial.shininess = appStore.isDark ? 8 : 14
-  globeMaterial.emissive.set(appStore.isDark ? 0x1E3A5F : 0x355C7D)
-  globeMaterial.emissiveIntensity = appStore.isDark ? 0.48 : 0.32
+  const dark = appStore.isDark
+  globeMaterial.bumpScale = dark ? 0.018 : 0.026
+  globeMaterial.shininess = dark ? 10 : 30
+  globeMaterial.emissive.set(0x000000)
+  globeMaterial.emissiveIntensity = 0
+  globeMaterial.specular.set(dark ? 0x587487 : 0x09131B)
   globeMaterial.needsUpdate = true
+  if (surfaceShaderUniforms) {
+    surfaceShaderUniforms.cityLightStrength.value = dark ? 1.82 : 1.24
+    surfaceShaderUniforms.nightBaseStrength.value = dark ? 0.24 : 0.25
+    surfaceShaderUniforms.nightGeographyStrength.value = dark ? 0.84 : 0.84
+    surfaceShaderUniforms.daySurfaceStrength.value = dark ? 1.34 : 1.24
+    surfaceShaderUniforms.dayAmbientStrength.value = dark ? 0.20 : 0.19
+    surfaceShaderUniforms.dayWarmCompression.value = dark ? 0 : 1
+    surfaceShaderUniforms.nightAmbientStrength.value = dark ? 0.13 : 0.14
+    surfaceShaderUniforms.terminatorWidth.value = dark ? 0.14 : 0.16
+    surfaceShaderUniforms.twinkleStrength.value = dark ? 0.14 : 0.08
+  }
+  if (ambientLight) {
+    ambientLight.color.set(dark ? 0x9EC5DD : 0xE8F3FF)
+    ambientLight.intensity = dark ? 0.66 : 0.82
+  }
+  if (hemisphereLight) {
+    hemisphereLight.color.set(dark ? 0x8CC7EA : 0xEAF6FF)
+    hemisphereLight.groundColor.set(dark ? 0x0B1A25 : 0x466A7F)
+    hemisphereLight.intensity = dark ? 0.38 : 0.52
+  }
+  if (keyLight) {
+    keyLight.color.set(dark ? 0xD6E9F7 : 0xFFF7ED)
+    keyLight.intensity = dark ? 1.82 : 1.36
+  }
+  if (fillLight) {
+    fillLight.color.set(dark ? 0x8FB5CC : 0xBFDBFE)
+    fillLight.intensity = dark ? 0.22 : 0.30
+  }
+  if (rimLight) {
+    rimLight.color.set(dark ? 0x22D3EE : 0x67E8F9)
+    rimLight.intensity = dark ? 0.1 : 0.06
+  }
+  const dayAtmosphereColor = atmosphereMaterial?.uniforms.dayAtmosphereColor?.value as import('three').Color | undefined
+  const nightAtmosphereColor = atmosphereMaterial?.uniforms.nightAtmosphereColor?.value as import('three').Color | undefined
+  dayAtmosphereColor?.set(dark ? 0x93DAFF : 0x2589D8)
+  nightAtmosphereColor?.set(dark ? 0x60A5FA : 0x376F84)
+  if (atmosphereMaterial?.uniforms.atmosphereIntensity)
+    atmosphereMaterial.uniforms.atmosphereIntensity.value = dark ? 0.58 : 0.42
+
+  globe.renderer().toneMappingExposure = dark ? 1.18 : 1.00
+  globeHostRef.value?.setAttribute('data-earth-phase', dark ? 'night' : 'day')
+  globeHostRef.value?.setAttribute('data-lighting-model', 'solar-terminator')
+  globeHostRef.value?.setAttribute('data-city-lights', 'nasa-black-marble-2016')
+  globeHostRef.value?.setAttribute('data-city-light-density', 'black-marble-weighted')
+  globeHostRef.value?.setAttribute('data-city-light-strength', (dark ? 1.82 : 1.24).toFixed(2))
+  globeHostRef.value?.setAttribute('data-night-geography-strength', '0.84')
+  globeHostRef.value?.setAttribute('data-day-surface-strength', (dark ? 1.34 : 1.24).toFixed(2))
+  globeHostRef.value?.setAttribute('data-day-warm-compression', dark ? '0.00' : '1.00')
+  globeHostRef.value?.setAttribute('data-light-ocean-specular', dark ? 'standard' : 'suppressed')
+  globeHostRef.value?.setAttribute('data-dark-atmosphere-halo', dark ? 'enhanced' : 'minimal')
+  globeHostRef.value?.setAttribute('data-atmosphere-day-color', dark ? '#93daff' : '#2589d8')
+  globeHostRef.value?.setAttribute('data-atmosphere-night-color', dark ? '#60a5fa' : '#376f84')
+  globeHostRef.value?.setAttribute('data-solar-refresh-ms', String(SOLAR_REFRESH_MS))
   globe
     .pointColor(pointColor)
-    .arcColor(() => appStore.isDark ? 'rgba(56, 189, 248, 0.82)' : 'rgba(2, 132, 199, 0.72)')
-    .ringColor(() => appStore.isDark ? 'rgba(45, 212, 191, 0.34)' : 'rgba(14, 165, 233, 0.28)')
-    .atmosphereColor(appStore.isDark ? '#38bdf8' : '#60a5fa')
-    .atmosphereAltitude(appStore.isDark ? 0.14 : 0.11)
+    .ringColor(() => dark ? 'rgba(45, 212, 191, 0.34)' : 'rgba(14, 165, 233, 0.28)')
+  syncSolarLighting()
 }
 
 function syncDataToGlobe() {
@@ -181,19 +640,8 @@ function syncDataToGlobe() {
     return
   globe
     .pointsData(pointsData.value)
-    .ringsData(pointsData.value)
-    .arcsData(arcsData.value)
+    .ringsData(reducedMotion.value ? [] : pointsData.value)
     .htmlElementsData(labelsData.value)
-  applyArcStyle()
-}
-
-function applyArcStyle() {
-  if (!globe)
-    return
-  globe
-    .arcDashLength(persistentEarthArcs.value ? 1 : 0.48)
-    .arcDashGap(persistentEarthArcs.value ? 0 : 1.4)
-    .arcDashAnimateTime(persistentEarthArcs.value ? 0 : 2600)
 }
 
 async function startGlobe() {
@@ -212,16 +660,39 @@ async function startGlobe() {
     if (destroyed || !globeHostRef.value)
       return
 
+    threeRuntime = THREE
+    sunDirectionWorld = new THREE.Vector3(0, 0, 1)
+    sunDirectionView = new THREE.Vector3(0, 0, 1)
+    const textureLoader = new THREE.TextureLoader()
+    nightTexture = await textureLoader.loadAsync(EARTH_NIGHT_TEXTURE)
+    nightTexture.colorSpace = THREE.SRGBColorSpace
+    waterSpecularMap = await textureLoader.loadAsync(EARTH_SPECULAR_MAP)
+    waterSpecularMap.colorSpace = THREE.NoColorSpace
+    for (const url of [EARTH_DAY_TEXTURE, EARTH_BUMP_MAP]) {
+      const texture = await textureLoader.loadAsync(url)
+      texture.dispose()
+    }
+    if (destroyed) {
+      nightTexture.dispose()
+      waterSpecularMap.dispose()
+      return
+    }
+
     const { width, height } = getRenderSize()
     globe = new Globe(globeHostRef.value, {
-      rendererConfig: { alpha: true, antialias: true },
+      rendererConfig: {
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance',
+        preserveDrawingBuffer: false,
+      },
     })
       .width(width)
       .height(height)
       .backgroundColor('rgba(0,0,0,0)')
-      .globeImageUrl(earthTextureUrl())
+      .globeImageUrl(EARTH_DAY_TEXTURE)
       .bumpImageUrl(EARTH_BUMP_MAP)
-      .showAtmosphere(true)
+      .showAtmosphere(false)
       .pointsData(pointsData.value)
       .pointLat('lat')
       .pointLng('lng')
@@ -229,26 +700,14 @@ async function startGlobe() {
       .pointRadius((point: object) => ((point as GlobePoint).onlineServers > 0 ? 0.22 : 0.13))
       .pointColor(pointColor)
       .pointsMerge(false)
-      .pointsTransitionDuration(500)
-      .ringsData(pointsData.value)
+      .pointsTransitionDuration(260)
+      .ringsData(reducedMotion.value ? [] : pointsData.value)
       .ringLat('lat')
       .ringLng('lng')
       .ringColor(() => appStore.isDark ? 'rgba(45, 212, 191, 0.34)' : 'rgba(14, 165, 233, 0.28)')
       .ringMaxRadius(1.4)
       .ringPropagationSpeed(0.8)
       .ringRepeatPeriod(2400)
-      .arcsData(arcsData.value)
-      .arcStartLat('startLat')
-      .arcStartLng('startLng')
-      .arcEndLat('endLat')
-      .arcEndLng('endLng')
-      .arcColor(() => appStore.isDark ? 'rgba(56, 189, 248, 0.82)' : 'rgba(2, 132, 199, 0.72)')
-      .arcAltitudeAutoScale(0.22)
-      .arcStroke(0.45)
-      .arcDashLength(persistentEarthArcs.value ? 1 : 0.48)
-      .arcDashGap(persistentEarthArcs.value ? 0 : 1.4)
-      .arcDashAnimateTime(persistentEarthArcs.value ? 0 : 2600)
-      .arcsTransitionDuration(500)
       .htmlElementsData(labelsData.value)
       .htmlLat('lat')
       .htmlLng('lng')
@@ -258,42 +717,60 @@ async function startGlobe() {
         el.style.opacity = isVisible ? '1' : '0'
         el.style.filter = isVisible ? 'blur(0)' : 'blur(14px)'
       })
-      .htmlTransitionDuration(500)
+      .htmlTransitionDuration(260)
+      .onZoom(() => syncSolarLighting())
+      .onGlobeReady(() => {
+        globeReady = true
+        globeHostRef.value?.setAttribute('data-render-ready', 'true')
+        resizeGlobe()
+        applyControls()
+        if (shouldRender.value && isContainerInViewport()) {
+          globe?.resumeAnimation()
+        }
+        else {
+          globe?.pauseAnimation()
+        }
+        syncSolarLighting()
+      })
 
     const renderer = globe.renderer()
     renderer.setClearColor(0x000000, 0)
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.NeutralToneMapping
+    renderer.toneMappingExposure = appStore.isDark ? 1.18 : 1.00
     renderer.domElement.style.background = 'transparent'
 
     const material = globe.globeMaterial()
     if ('shininess' in material) {
       globeMaterial = material as MeshPhongMaterial
-      waterSpecularMap = new THREE.TextureLoader().load(EARTH_SPECULAR_MAP, () => {
-        if (!globeMaterial)
-          return
-        globeMaterial.specularMap = waterSpecularMap
-        globeMaterial.needsUpdate = true
-      })
-      globeMaterial.specular = new THREE.Color(appStore.isDark ? 0x64748B : 0x475569)
+      globeMaterial.specularMap = waterSpecularMap
+      globeMaterial.specular = new THREE.Color(appStore.isDark ? 0x657C91 : 0x5B7185)
+      configureSurfaceShader()
     }
 
-    const frontLight = new THREE.DirectionalLight(0xFFFFFF, appStore.isDark ? 0.9 : 1.0)
-    frontLight.position.set(1.2, 1.1, 1.6)
-    const leftFill = new THREE.DirectionalLight(0xDBEAFE, appStore.isDark ? 0.62 : 0.48)
-    leftFill.position.set(-1.2, 0.2, 1.2)
-    const rearFill = new THREE.DirectionalLight(0xE0F2FE, appStore.isDark ? 0.52 : 0.38)
-    rearFill.position.set(-1.0, -0.8, -1.2)
-    globe.lights([
-      new THREE.AmbientLight(0xFFFFFF, appStore.isDark ? 1.85 : 1.45),
-      frontLight,
-      leftFill,
-      rearFill,
-    ])
+    ambientLight = new THREE.AmbientLight(0xE8F3FF, 1.08)
+    hemisphereLight = new THREE.HemisphereLight(
+      0xEAF6FF,
+      0x284657,
+      0.86,
+    )
+    keyLight = new THREE.DirectionalLight(0xFFF7ED, 1.34)
+    fillLight = new THREE.DirectionalLight(0xBFDBFE, 0.62)
+    fillLight.position.set(-1.25, 0.15, 1.05)
+    rimLight = new THREE.DirectionalLight(0x67E8F9, 0.14)
+    rimLight.position.set(-1.1, 0.55, -1.55)
+    globe.lights([ambientLight, hemisphereLight, keyLight, fillLight, rimLight])
 
+    createAtmosphereLayer()
     applyMaterialStyle()
     applyControls()
     resetPointOfView(0)
-    if (!shouldRender.value)
-      globe.pauseAnimation()
+    syncSolarLighting()
+    syncTwinkleAnimation()
+  }
+  catch {
+    renderFailed.value = true
+    stopGlobe()
   }
   finally {
     loadingGlobe = false
@@ -301,15 +778,64 @@ async function startGlobe() {
 }
 
 function stopGlobe() {
-  if (!globe)
+  if (!globe) {
+    nightTexture?.dispose()
+    waterSpecularMap?.dispose()
     return
+  }
 
+  if (atmosphereMesh)
+    globe.scene().remove(atmosphereMesh)
+  atmosphereMaterial?.dispose()
+  atmosphereMesh = null
+  atmosphereMaterial = null
+
+  const renderer = globe.renderer()
   globe.pauseAnimation()
   globe._destructor()
+  // three-render-objects only disposes renderer resources. Explicitly release
+  // the browser context as well so repeated renderer/theme switches do not
+  // leave enough retired WebGL contexts around to affect the next globe.
+  renderer.forceContextLoss()
   globe = null
+  globeReady = false
+  globeHostRef.value?.removeAttribute('data-render-ready')
+  globeHostRef.value?.removeAttribute('data-earth-phase')
+  globeHostRef.value?.removeAttribute('data-lighting-model')
+  globeHostRef.value?.removeAttribute('data-city-lights')
+  globeHostRef.value?.removeAttribute('data-city-light-density')
+  globeHostRef.value?.removeAttribute('data-city-light-strength')
+  globeHostRef.value?.removeAttribute('data-atmosphere-model')
+  globeHostRef.value?.removeAttribute('data-atmosphere-transmission')
+  globeHostRef.value?.removeAttribute('data-subsolar-lat')
+  globeHostRef.value?.removeAttribute('data-subsolar-lng')
+  globeHostRef.value?.removeAttribute('data-sun-view')
+  globeHostRef.value?.removeAttribute('data-night-geography-strength')
+  globeHostRef.value?.removeAttribute('data-day-surface-strength')
+  globeHostRef.value?.removeAttribute('data-day-warm-compression')
+  globeHostRef.value?.removeAttribute('data-light-ocean-specular')
+  globeHostRef.value?.removeAttribute('data-dark-atmosphere-halo')
+  globeHostRef.value?.removeAttribute('data-atmosphere-day-color')
+  globeHostRef.value?.removeAttribute('data-atmosphere-night-color')
+  globeHostRef.value?.removeAttribute('data-visible-earth-radius')
+  globeHostRef.value?.removeAttribute('data-atmosphere-halo-width')
+  globeHostRef.value?.removeAttribute('data-solar-refresh-ms')
+  globeHostRef.value?.removeAttribute('data-city-twinkle')
   globeMaterial = null
+  surfaceShaderUniforms = null
+  ambientLight = null
+  hemisphereLight = null
+  keyLight = null
+  fillLight = null
+  rimLight = null
   waterSpecularMap?.dispose()
   waterSpecularMap = null
+  nightTexture?.dispose()
+  nightTexture = null
+  sunDirectionWorld = null
+  sunDirectionView = null
+  threeRuntime = null
+  labelElements.clear()
   if (globeHostRef.value)
     globeHostRef.value.replaceChildren()
 }
@@ -329,16 +855,18 @@ watch([containerWidth, containerHeight], ([width, height]) => {
   resizeGlobe()
 })
 
-watch([
-  () => regionClusters.value.map(clusterKey).join(','),
-  () => earthArcs.value.map(arc => `${arc.id}:${arc.from.join(',')}:${arc.to.join(',')}`).join('|'),
-  () => appStore.earthArcMode,
-], () => {
+watch(() => regionClusters.value.map(clusterKey).join(','), () => {
   syncDataToGlobe()
 })
 
 watch(() => appStore.isDark, () => {
   applyMaterialStyle()
+})
+
+watch(reducedMotion, () => {
+  applyControls()
+  syncDataToGlobe()
+  syncTwinkleAnimation()
 })
 
 watch(() => appStore.stopEarth, (stopped) => {
@@ -348,12 +876,14 @@ watch(() => appStore.stopEarth, (stopped) => {
 })
 
 watch(shouldRender, (visible) => {
-  if (!globe)
+  if (!globe || !globeReady)
     return
   if (visible) {
     globe.resumeAnimation()
     applyControls()
     resizeGlobe()
+    syncSolarLighting()
+    syncTwinkleAnimation()
     return
   }
   globe.pauseAnimation()
@@ -362,19 +892,30 @@ watch(shouldRender, (visible) => {
 </script>
 
 <template>
-  <div ref="containerRef" :data-earth-arc-count="earthArcs.length" :data-earth-arc-motion="persistentEarthArcs ? 'persistent' : 'dynamic'" class="relative z-0 aspect-square w-full max-w-md mx-auto translate-y-2 md:-translate-y-1 overflow-visible pointer-events-none">
-    <div ref="globeHostRef" class="earth-globe-host absolute inset-0 z-0 w-full h-full scale-106 select-none touch-auto pointer-events-auto cursor-grab active:cursor-grabbing" />
+  <div ref="containerRef" :data-earth-arc-count="earthArcs.length" :data-earth-arc-motion="appStore.earthArcMode === 'persistent' ? 'persistent' : 'dynamic'" :data-earth-active="shouldRender" :data-earth-reduced="reducedMotion" class="realistic-earth-shell relative z-0 aspect-square w-full max-w-md mx-auto translate-y-2 md:-translate-y-1 overflow-visible pointer-events-none">
+    <div
+      ref="globeHostRef"
+      class="earth-globe-host absolute inset-0 z-10 w-full h-full scale-106 select-none touch-auto pointer-events-auto cursor-grab active:cursor-grabbing"
+    />
 
+    <EarthLightTrails
+      ref="trailsRef" class="scale-106" :arcs="earthArcs" :mode="appStore.earthArcMode"
+      :active="shouldRender && !renderFailed" :is-dark="appStore.isDark" :reduced-motion="reducedMotion" :project="projectTrailPoint"
+    />
+
+    <div v-if="renderFailed" role="status" class="absolute inset-0 z-30 grid place-content-center text-sm text-muted-foreground pointer-events-none">
+      {{ appStore.lang === 'zh-CN' ? '地球暂不可用' : 'Globe unavailable' }}
+    </div>
     <div
       v-if="totalServers > 0"
-      class="absolute top-6 md:top-12 left-0 text-[10px] text-muted-foreground pointer-events-none flex gap-2 items-center backdrop-blur-lg bg-background/60 rounded px-2 py-0.5"
+      class="absolute top-6 md:top-12 left-0 z-20 text-[10px] text-muted-foreground pointer-events-none flex gap-2 items-center backdrop-blur-lg bg-background/60 rounded px-2 py-0.5"
     >
       <div v-if="onlineServers > 0" class="flex items-center gap-1">
-        <span class="inline-block size-1.5 rounded-full bg-green-600 animate-pulse" />
+        <span class="inline-block size-1.5 rounded-full bg-green-600 " :class="!reducedMotion && shouldRender && 'animate-pulse'" />
         <span class="text-green-600">{{ onlineServers }}</span>
       </div>
       <div v-if="offlineServers > 0" class="flex items-center gap-1">
-        <span class="inline-block size-1.5 rounded-full bg-yellow-600 animate-pulse" />
+        <span class="inline-block size-1.5 rounded-full bg-yellow-600 " :class="!reducedMotion && shouldRender && 'animate-pulse'" />
         <span class="text-yellow-600">{{ offlineServers }}</span>
       </div>
     </div>
@@ -385,11 +926,62 @@ watch(shouldRender, (visible) => {
 .earth-globe-host {
   contain: layout paint;
   background: transparent;
+  transform: none;
+  transform-origin: center;
+  transition: transform 420ms ease;
+}
+
+.realistic-earth-shell::after {
+  position: absolute;
+  z-index: 17;
+  top: 50%;
+  left: 50%;
+  width: var(--earth-halo-diameter, 108%);
+  height: var(--earth-halo-diameter, 108%);
+  border-radius: 50%;
+  background: linear-gradient(
+    var(--earth-atmosphere-angle, 90deg),
+    var(--earth-atmosphere-night, rgb(96 165 250 / 0.32)) 0%,
+    var(--earth-atmosphere-day, rgb(147 218 255 / 0.4)) 100%
+  );
+  content: '';
+  filter: blur(10px) saturate(0.9);
+  -webkit-mask: radial-gradient(
+    circle at center,
+    transparent 0 var(--earth-halo-inner-radius, 222px),
+    rgb(0 0 0 / 0.4) var(--earth-visible-radius, 230px),
+    rgb(0 0 0 / 0.76) var(--earth-halo-contact-radius, 232px),
+    rgb(0 0 0 / 0.44) var(--earth-halo-shoulder-radius, 242px),
+    rgb(0 0 0 / 0.16) var(--earth-halo-fade-radius, 252px),
+    transparent var(--earth-halo-outer-radius, 262px)
+  );
+  mask: radial-gradient(
+    circle at center,
+    transparent 0 var(--earth-halo-inner-radius, 222px),
+    rgb(0 0 0 / 0.4) var(--earth-visible-radius, 230px),
+    rgb(0 0 0 / 0.76) var(--earth-halo-contact-radius, 232px),
+    rgb(0 0 0 / 0.44) var(--earth-halo-shoulder-radius, 242px),
+    rgb(0 0 0 / 0.16) var(--earth-halo-fade-radius, 252px),
+    transparent var(--earth-halo-outer-radius, 262px)
+  );
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 420ms ease;
+}
+
+:global(.dark .realistic-earth-shell::after) {
+  opacity: 1;
 }
 
 .earth-globe-host :deep(canvas) {
   background: transparent !important;
+  filter: saturate(0.99) contrast(1.005) brightness(1);
   outline: none;
+}
+
+:global(.dark .earth-globe-host canvas) {
+  filter: saturate(1.1) contrast(1.02) brightness(1.05);
 }
 
 .earth-globe-host :deep(.scene-container) {
@@ -412,7 +1004,13 @@ watch(shouldRender, (visible) => {
   width: 1.2rem;
   height: 1.2rem;
   display: block;
-  border-radius: 0.18rem;
-  box-shadow: 0 8px 20px rgb(15 23 42 / 24%);
+  border-radius: 0.24rem;
+  filter: drop-shadow(0 0 1px rgb(15 23 42 / 0.92)) drop-shadow(0 6px 8px rgb(15 23 42 / 0.46));
+  object-fit: cover;
+}
+
+.realistic-earth-shell :deep(.earth-meteor-overlay) {
+  z-index: 18;
+  isolation: isolate;
 }
 </style>

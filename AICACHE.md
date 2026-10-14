@@ -12,10 +12,13 @@
 
 ## 当前任务
 
-### GlassOps 双地球迁移（进行中）
+### GlassOps 双地球迁移与 v1.2.0 发布（进行中）
 
 - 用户批准完整方案，分支 feat/glassops-earth-migration；规格 docs/glassops-earth-migration_spec.md。M4，保留三网无分隔线，不升版本、不发布。
-- 先采集旧布局基线与编写光轨聚焦失败测试；源快照 c5ba36a。
+- 用户最新授权发布，兼容功能版本定为 1.2.0；仅向 ShirlyTaylor73/Glassmorphism-Enhanced 写入，权限 ADMIN，发布前 main=63e44f6，无 v1.2.0。
+- 旧版真实尺寸基线已补采，测试固定起始日期但推进时钟，避免旧 fixture 固定 Date.now 导致库的 debounce 不运行。贴图桌面/移动约367/293px，点阵358/286px。
+- 已迁移 c5ba36a 双地球视觉、共享节点光轨、动画生命周期和资源署名；完整回归158/158通过，8项真实像素/布局、5项光轨纯逻辑通过，lint/type-check/build/diff-check通过。
+- 此前 Git 提交因审批服务额度失败未执行；本轮审批恢复，补验生命周期/失败降级后提交与发布。真实设备及生产站点尚未安装验收。
 
 ### 三网移除全部分隔线（完成，Ready for review）
 

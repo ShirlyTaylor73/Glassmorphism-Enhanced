@@ -7,11 +7,11 @@
       "height": 448
     },
     "center": {
-      "x": 954.0,
-      "y": 293.0
+      "x": 954,
+      "y": 293
     },
-    "diameterReference": 366.9403558991884,
-    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+    "diameterReference": 366.7599566323417,
+    "diameterMethod": "旧版真实WebGL中线附近不透明像素跨度；固定起始日期、推进时钟、保留帧缓冲采集。"
   },
   "realistic-390": {
     "box": {
@@ -21,11 +21,11 @@
       "height": 358
     },
     "center": {
-      "x": 195.0,
-      "y": 260.0
+      "x": 195,
+      "y": 260
     },
-    "diameterReference": 293.22465940158355,
-    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+    "diameterReference": 292.55998494238827,
+    "diameterMethod": "旧版真实WebGL中线附近不透明像素跨度；固定起始日期、推进时钟、保留帧缓冲采集。"
   },
   "cobe-1280": {
     "box": {
@@ -35,11 +35,11 @@
       "height": 448
     },
     "center": {
-      "x": 954.0,
-      "y": 249.0
+      "x": 954,
+      "y": 249
     },
-    "diameterReference": 358.40000000000003,
-    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+    "diameterReference": 358,
+    "diameterMethod": "旧版真实WebGL中线附近不透明像素跨度；固定起始日期、推进时钟、保留帧缓冲采集。"
   },
   "cobe-390": {
     "box": {
@@ -49,10 +49,10 @@
       "height": 358
     },
     "center": {
-      "x": 195.0,
-      "y": 228.0
+      "x": 195,
+      "y": 228
     },
-    "diameterReference": 286.40000000000003,
-    "diameterMethod": "旧版参数推导：cobe scale=1 radius=.8；realistic FOV=50 altitude=1.95 hostScale=1.06。旧版初始帧空白，非像素测量。"
+    "diameterReference": 286,
+    "diameterMethod": "旧版真实WebGL中线附近不透明像素跨度；固定起始日期、推进时钟、保留帧缓冲采集。"
   }
 }

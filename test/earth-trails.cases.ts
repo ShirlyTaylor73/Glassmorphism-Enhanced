@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { adaptEarthFlights, arcPoint, flightProgress, isOccludedBySphere, projectTrail } from '../src/utils/earthTrails'
 import { buildAutomaticEarthArcs, buildUpstreamEarthArcs } from '../src/utils/earthArcs'
+import { adaptEarthFlights, arcPoint, flightProgress, isOccludedBySphere, projectTrail } from '../src/utils/earthTrails'
 
 test('flight direction only reverses upstream rendering', () => {
   const arcs = [
@@ -16,7 +16,7 @@ test('flight direction only reverses upstream rendering', () => {
 test('spherical arc pins both endpoints and remains finite at antipodes', () => {
   expect(arcPoint([0, 0], [0, 90], 0)).toEqual([0, 0, 1.012])
   expect(arcPoint([0, 0], [0, 90], 1)[0]).toBeCloseTo(1.012)
-  for (const t of [0, .25, .5, .75, 1]) {
+  for (const t of [0, 0.25, 0.5, 0.75, 1]) {
     const p = arcPoint([0, 0], [0, 180], t)
     expect(p.every(Number.isFinite)).toBe(true)
     expect(Math.hypot(...p)).toBeGreaterThanOrEqual(1)
@@ -44,7 +44,7 @@ test('sphere occlusion hides rear points while elevated limbs and front points r
   expect(isOccludedBySphere([0, 0, 1.02], [0, 0, 3])).toBe(false)
   expect(isOccludedBySphere([1.5, 0, 0], [0, 0, 3])).toBe(false)
   const project = (point: readonly number[]) => ({ x: point[0]! * 100, y: point[1]! * 100, visible: !isOccludedBySphere(point as [number, number, number], [0, 0, 3]) })
-  const path = projectTrail([0, 0], [0, 140], .9, project)
+  const path = projectTrail([0, 0], [0, 140], 0.6, project)
   expect(path.d.length).toBeGreaterThan(0)
   expect(path.headVisible).toBe(false)
 })
@@ -52,7 +52,7 @@ test('sphere occlusion hides rear points while elevated limbs and front points r
 test('topology caps, invalid and coincident coordinates remain filtered', () => {
   const clusters = Array.from({ length: 80 }, (_, i) => ({ id: `${i}`, code: 'US', servers: 1, onlineServers: 1, coord: [i, i] as [number, number] }))
   expect(buildAutomaticEarthArcs(clusters)).toHaveLength(24)
-  expect(buildAutomaticEarthArcs([...clusters, { ...clusters[0]!, id: 'bad', coord: [NaN, 0] }])).toHaveLength(24)
+  expect(buildAutomaticEarthArcs([...clusters, { ...clusters[0]!, id: 'bad', coord: [Number.NaN, 0] }])).toHaveLength(24)
   expect(buildAutomaticEarthArcs([clusters[0]!, { ...clusters[0]!, id: 'same' }])).toHaveLength(0)
   expect(buildUpstreamEarthArcs([], new Map())).toEqual([])
 })
