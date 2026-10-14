@@ -2,6 +2,12 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.1.2 — 2026-10-14
+
+- 去掉三网每行的外框、独立背景和圆角，仅保留行间两条共享分隔线，避免相邻边框重复。
+- 分隔线固定在行间隙，保留拖动悬浮、让位动画及全局顺序同步，内容尺寸与数据计算不变。
+- 完整回归 145/145 通过，原视觉基线保持不变。
+
 ## 1.1.1 — 2026-10-14
 
 - 三网每个运营商整行改为淡底、细边框、圆角小卡片，明暗主题和 mini 布局保持清晰。

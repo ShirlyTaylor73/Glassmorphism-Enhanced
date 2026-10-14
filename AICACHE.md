@@ -12,6 +12,12 @@
 
 ## 当前任务
 
+### 2026-10-14 v1.1.2 发布（进行中）
+
+- 用户授权发布三网边框简化，版本 1.1.2，目标仅 ShirlyTaylor73/Glassmorphism-Enhanced。
+- 远端 main=ca51652，权限 ADMIN，v1.1.2 不存在；核对实际 Actions，必要时手动 Code Quality 成功后发布。
+- 继承完整回归 145/145；发布阶段验证 lint/type-check/build/ZIP，不覆盖历史版本、不部署生产。
+
 ### 三网边框合并（完成，Ready for review）
 
 - 用户要求去掉三网行外框、合并相邻边框。M4，分支 fix/carrier-separators，代码提交 0dee874。
