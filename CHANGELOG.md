@@ -2,6 +2,11 @@
 
 All notable Glassmorphism Enhanced changes are documented here. Upstream history remains in the upstream repository and preserved Git history.
 
+## 1.2.2 — 2026-10-15
+
+- PC三网行悬停改为圆角底色与柔和窄阴影，替代硬描边；移开后恢复无框，布局不抖动。
+- 保留手机触摸、键盘聚焦提示及拖动悬浮效果；悬停/排序专项12项通过。
+
 ## 1.2.1 — 2026-10-14
 
 - 三网行默认无边框，鼠标悬停或键盘聚焦时显示圆角内描边，移开后隐藏且布局不抖动。
