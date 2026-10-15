@@ -12,6 +12,13 @@
 
 ## 当前任务
 
+### 2026-10-15 PC三网悬停窄阴影（完成，Ready for review）
+
+- 用户要求PC悬停参考手机图的窄阴影。M4，分支fix/carrier-hover-shadow，代码7ff9b42。
+- 仅hover媒体查询内将内描边替换为card底色与两层柔和外阴影，增加背景过渡；默认无框、键盘聚焦提示和拖动浮层保留。
+- lint/type-check、既有hover-trails/carrier-order专项12/12、production build及diff-check通过；截图人工检查无布局抖动。单组件低风险样式修改未重复全量回归，未新增镜像测试或修改基线。
+- 候选包komari-theme-Glassmorphism-build-7ff9b42.zip，版本仍1.2.1，CRC/结构/manifest/preview通过；未push/release。
+
 ### v1.2.1 发布（已完成）
 
 - 用户授权发布悬停边框和浅色光轨，版本1.2.1，仅向ShirlyTaylor73/Glassmorphism-Enhanced写入。
@@ -19,7 +26,6 @@
 - 正式Release已发布且为Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.1 ，main/annotated Tag peeled SHA=1f37cab3df201b7aa260b7d4494ba931a9527214。
 - push无自动运行，手动Code Quality 38553836622成功后发布。附件komari-theme-Glassmorphism-build-1f37cab.zip，6,024,363 bytes / 361 entries。
 - 下载与本地/GitHub digest一致：SHA256 7a8ee8b18cdfed5ad8941ce0596124cb7d599f2bafb5194b03721f99dfc7a313。CRC/顶层/manifest/preview通过；交接仅推工作分支，未部署生产。
-
 
 ### 三网悬停边框与浅色光轨（完成，Ready for review）
 
