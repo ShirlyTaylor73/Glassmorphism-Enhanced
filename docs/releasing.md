@@ -1,6 +1,12 @@
 # Releasing Glassmorphism Enhanced
 
-## 当前发布：v1.2.1（2026-10-14）
+## 当前发布：v1.2.2（2026-10-15）
+
+已发布且为Latest：[v1.2.2](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.2)，main/Tag=`5a8cd67`。用户授权发布PC三网悬停柔和窄阴影。
+
+Push无自动运行，[手动Code Quality](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/actions/runs/38669934426)成功后发布。专项12/12、lint/type-check/build通过；未重复全量。附件下载与本地/GitHub digest一致，6,024,407 bytes，SHA256 `057c46a090978f6cc77f4b5eda65508de51df815cf68e0215369e590026e8514`。CRC/结构/manifest/preview通过，未替换线上主题。说明见 [发布说明](release-notes-v1.2.2.md)。
+
+## 历史发布：v1.2.1（2026-10-14）
 
 已发布且为 Latest：[v1.2.1](https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.1)，main/Tag=`1f37cab`。内容为三网悬停/聚焦边框和浅色光轨可见度优化。
 

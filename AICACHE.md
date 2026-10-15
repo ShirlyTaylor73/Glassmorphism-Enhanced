@@ -12,10 +12,14 @@
 
 ## 当前任务
 
-### 2026-10-15 v1.2.2 发布（进行中）
+### 2026-10-15 v1.2.2 发布（已完成）
 
 - 用户授权发布PC悬停窄阴影修正；唯一目标ShirlyTaylor73/Glassmorphism-Enhanced，权限ADMIN，发布前main=1f37cab，无v1.2.2。
 - 沿用专项12/12，发布阶段lint/type-check/build/ZIP与实际Actions验证；不覆盖历史版本、不部署生产。
+- Release已发布且为Latest：https://github.com/ShirlyTaylor73/Glassmorphism-Enhanced/releases/tag/v1.2.2 ，main/annotated Tag peeled SHA=5a8cd678ae6cf92e031943c098b064cbdb89367d。
+- push无自动运行，手动Code Quality 38669934426成功后发布。附件komari-theme-Glassmorphism-build-5a8cd67.zip，6,024,407 bytes / 361 entries。
+- 下载与本地/GitHub digest一致：SHA256 057c46a090978f6cc77f4b5eda65508de51df815cf68e0215369e590026e8514。CRC/顶层/manifest/preview通过；交接仅推工作分支，未部署生产。
+
 
 ### 2026-10-15 PC三网悬停窄阴影（完成，Ready for review）
 
